@@ -85,7 +85,7 @@ flowchart TD
 
 | 모듈명 | 기술 스택 | 주 사용자 | 주요 기능 및 역할 |
 | :--- | :--- | :--- | :--- |
-| **`wms-lite-server`** | Java 21, Spring Boot, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
+| **`wms-lite/wms-lite`** | Java 21, Spring Boot 3.x, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
 | **`wms-lite-user-web`** | React 18, TypeScript, Vite | 현장 작업자 / 현장 관리자 | 입고 적치(Putaway), 출고 피킹(Picking), 로케이션 이동, 실시간 재고 조회 |
 | **`wms-lite-admin-web`** | React 18, TypeScript, Vite | 플랫폼 / 시스템 관리자 | 마스터 기준정보(창고/로케이션/품목/거래처) 관리, 계정/권한 통제, 전체 모니터링 |
 | **`wms-lite-test-web`** | React, Web | 개발자 / QA | 신속한 API 기능 검증 및 시나리오 테스트용 단일 페이지 |
@@ -253,7 +253,8 @@ erDiagram
 - **Core**: Java 21, Spring Boot 3.x / 4.x
 - **ORM / Persistence**: Spring Data JPA, Hibernate, MapStruct 1.6.3
 - **Security**: Spring Security, JJWT (io.jsonwebtoken 0.12.6)
-- **Database**: H2 (In-Memory / File), PostgreSQL, MSSQL
+- **Database & Cloud**: Neon.tech (Cloud Serverless PostgreSQL), H2 (In-Memory / File), MSSQL
+- **Cloud Hosting & Deployment**: Railway (PaaS - Nixpacks Builder)
 - **Docs & Testing**: SpringDoc OpenAPI 2.8.5 (Swagger UI), JUnit 5, Mockito
 - **Build Tool**: Gradle (Kotlin DSL)
 
@@ -269,7 +270,7 @@ erDiagram
 
 ```text
 wms-lite (Root Monorepo)
-├── 📂 wms-lite-server (Backend API Server)
+├── 📂 wms-lite (Backend API Server Core)
 │   └── wms-lite
 │       ├── 📂 src/main/java/com/wms/wms_lite
 │       │   ├── 📂 domain
@@ -279,7 +280,9 @@ wms-lite (Root Monorepo)
 │       │   │   ├── 📂 board            # 현장 공지 및 자유게시판
 │       │   │   └── 📂 user             # 사용자(Member) 및 관리자(Admin) 인증/관리
 │       │   └── 📂 global               # Security, JWT, Error Handling, Base Entity
-│       └── 📂 src/test/java            # 도메인 단위/통합 테스트 코드
+│       ├── 📂 src/test/java            # 도메인 단위/통합 테스트 코드
+│       ├── 📄 .env.prod.example        # 운영(prod) 프로파일 환경변수 템플릿
+│       └── 📄 railway.toml             # Railway 자동 빌드 & 헬스체크 배포 설정 파일
 │
 ├── 📂 wms-lite-user-web (현장 실무자 전용 Web)
 │   └── src
@@ -302,10 +305,47 @@ wms-lite (Root Monorepo)
 ### 요구 사양 (Prerequisites)
 - **Java**: JDK 21 이상
 - **Node.js**: v18.x 이상 및 npm
-- **Database**: H2 (기본 내장) / 외부 DB 연동 시 PostgreSQL 또는 MSSQL
+- **Database**: H2 (개발 기본 내장) / 운영 DB (Neon.tech PostgreSQL)
 
-### 1) 배치 스크립트를 통한 간편 실행 (`/utils`)
-Windows 환경에서는 `utils` 디렉토리에 제공되는 배치 스크립트를 통해 원클릭으로 구동할 수 있습니다.
+---
+
+### 1) 수동 빌드 및 로컬 실행
+
+#### 백엔드 (`wms-lite/wms-lite`)
+```bash
+cd wms-lite/wms-lite
+./gradlew bootRun
+```
+* **Swagger UI (API 명세서)**: `http://localhost:8080/swagger-ui/index.html`
+* **H2 Database Console**: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:wmsdb`)
+
+#### 프론트엔드 (`wms-lite-user-web`)
+```bash
+cd wms-lite-user-web
+npm install
+npm run dev
+```
+* **웹 애플리케이션 접속**: `http://localhost:5173`
+
+---
+
+### 2) 클라우드 배포 가이드 (Railway + Neon.tech)
+
+운영 프로파일(`SPRING_PROFILES_ACTIVE=prod`) 적용 시 **Railway** 환경변수에 다음 값들을 설정합니다:
+
+| 환경변수 Key | 설정 내용 예시 |
+| :--- | :--- |
+| `SPRING_PROFILES_ACTIVE` | `prod` |
+| `DB_URL` | `jdbc:postgresql://<neon-host>/<dbname>?sslmode=require` |
+| `DB_USERNAME` | `neondb_owner` |
+| `DB_PASSWORD` | `<neon-password>` |
+| `JWT_SECRET` | 32자 이상의 무작위 임의 시크릿 문자열 |
+| `CORS_ALLOWED_ORIGINS` | `https://your-frontend-domain.com` |
+
+---
+
+### 3) 원클릭 배치 스크립트 실행 (`/utils`)
+Windows 환경에서는 `utils` 디렉토리에 제공되는 배치 스크립트를 통해 구동할 수 있습니다.
 
 ```bash
 # 전체 시스템 구동 (백엔드 + 실무 웹 + 관리자 웹 동시 실행)
@@ -313,28 +353,7 @@ utils/run-all.bat
 
 # 백엔드 서버만 단독 실행
 utils/run-server.bat
-
-# 현장 실무 웹 단독 실행
-utils/run-user-web.bat
 ```
-
-### 2) 수동 빌드 및 실행
-
-#### 백엔드 (wms-lite-server)
-```bash
-cd wms-lite-server/wms-lite
-./gradlew bootRun
-```
-* 서버 기동 후 Swagger UI 접속: `http://localhost:8080/swagger-ui/index.html`
-* H2 Database Console: `http://localhost:8080/h2-console`
-
-#### 프론트엔드 (wms-lite-user-web)
-```bash
-cd wms-lite-user-web
-npm install
-npm run dev
-```
-* 웹 애플리케이션 접속: `http://localhost:5173`
 
 ---
 
