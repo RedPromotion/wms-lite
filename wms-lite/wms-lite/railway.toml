@@ -14,6 +14,10 @@
 # Gradle Wrapper로 빌드 (Java 21)
 builder = "NIXPACKS"
 buildCommand = "./gradlew clean bootJar -x test"
+nixpacksJdkVersion = "21"
+
+[build.environment]
+NIXPACKS_JDK_VERSION = "21"
 
 [deploy]
 # 빌드된 JAR 실행
