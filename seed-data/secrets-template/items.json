@@ -1,0 +1,74 @@
+[
+  {
+    "code": "ITM-2026-001",
+    "name": "무선 저소음 키보드 K800",
+    "barcode": "8801234567890",
+    "specification": "380x130x20mm / 450g",
+    "unit": "EA",
+    "categoryCode": "CAT-PERIPHERAL",
+    "supplierCode": "SUP-LOGITECH"
+  },
+  {
+    "code": "ITM-2026-002",
+    "name": "광학 무선 마우스 M350",
+    "barcode": "8801234567891",
+    "specification": "107x59x26mm / 100g",
+    "unit": "EA",
+    "categoryCode": "CAT-PERIPHERAL",
+    "supplierCode": "SUP-LOGITECH"
+  },
+  {
+    "code": "ITM-2026-005",
+    "name": "C-Type 초고속 충전 케이블 2M",
+    "barcode": "8801234567895",
+    "specification": "케이블 길이 2m / 무게 50g / 최대 100W 지원",
+    "unit": "EA",
+    "categoryCode": "CAT-PERIPHERAL",
+    "supplierCode": "SUP-BELKIN"
+  },
+  {
+    "code": "ITM-2026-006",
+    "name": "65W 멀티 PD 고속 충전기",
+    "barcode": "8801234567896",
+    "specification": "95x60x30mm / 180g / 3-포트(USB-A×2 + C×1)",
+    "unit": "EA",
+    "categoryCode": "CAT-PERIPHERAL",
+    "supplierCode": "SUP-BELKIN"
+  },
+  {
+    "code": "ITM-2026-003",
+    "name": "27인치 4K UHD 모니터",
+    "barcode": "8801234567892",
+    "specification": "613x363x41mm / 4.8kg / IPS / 144Hz",
+    "unit": "BOX",
+    "categoryCode": "CAT-DISPLAY",
+    "supplierCode": "SUP-SAMSUNG"
+  },
+  {
+    "code": "ITM-2026-007",
+    "name": "32인치 QHD 울트라기어 게이밍 모니터",
+    "barcode": "8801234567897",
+    "specification": "714x420x50mm / 6.5kg / VA / 165Hz / 1ms",
+    "unit": "BOX",
+    "categoryCode": "CAT-DISPLAY",
+    "supplierCode": "SUP-SAMSUNG"
+  },
+  {
+    "code": "ITM-2026-004",
+    "name": "표준 목재 물류 파렛트 (1100×1100)",
+    "barcode": "8801234567894",
+    "specification": "1100x1100x150mm / 최대 적재 1.5t",
+    "unit": "PALLET",
+    "categoryCode": "CAT-LOGISTICS",
+    "supplierCode": "SUP-BELKIN"
+  },
+  {
+    "code": "ITM-2026-008",
+    "name": "친환경 에어쿠션 완충 포장재 (롤)",
+    "barcode": "8801234567898",
+    "specification": "너비 200mm × 길이 100m 롤 / 재생 PE 소재",
+    "unit": "EA",
+    "categoryCode": "CAT-LOGISTICS",
+    "supplierCode": "SUP-LOGITECH"
+  }
+]

@@ -1,0 +1,47 @@
+[
+  {
+    "loginId": "sample_supervisor",
+    "password": "SamplePassword123!",
+    "name": "현장 총괄(예시)",
+    "email": "supervisor@example.com",
+    "phone": "010-0000-0002",
+    "department": "WAREHOUSE_OPERATOR",
+    "role": "ROLE_MANAGER"
+  },
+  {
+    "loginId": "sample_inbound",
+    "password": "SamplePassword123!",
+    "name": "입고 작업자(예시)",
+    "email": "inbound@example.com",
+    "phone": "010-0000-0003",
+    "department": "INBOUND_OPERATOR",
+    "role": "ROLE_OPERATOR"
+  },
+  {
+    "loginId": "sample_outbound",
+    "password": "SamplePassword123!",
+    "name": "출고 작업자(예시)",
+    "email": "outbound@example.com",
+    "phone": "010-0000-0004",
+    "department": "OUTBOUND_OPERATOR",
+    "role": "ROLE_OPERATOR"
+  },
+  {
+    "loginId": "sample_worker",
+    "password": "SamplePassword123!",
+    "name": "일반 작업자(예시)",
+    "email": "worker@example.com",
+    "phone": "010-0000-0005",
+    "department": "WAREHOUSE_OPERATOR",
+    "role": "ROLE_OPERATOR"
+  },
+  {
+    "loginId": "sample_auditor",
+    "password": "SamplePassword123!",
+    "name": "재고 감사원(예시)",
+    "email": "auditor@example.com",
+    "phone": "010-0000-0006",
+    "department": "INVENTORY_AUDITOR",
+    "role": "ROLE_VIEWER"
+  }
+]

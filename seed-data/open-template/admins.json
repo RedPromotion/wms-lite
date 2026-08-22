@@ -1,0 +1,18 @@
+[
+  {
+    "loginId": "sample_admin",
+    "password": "SamplePassword123!",
+    "name": "시스템 관리자(예시)",
+    "email": "sample_admin@example.com",
+    "phone": "010-0000-0000",
+    "role": "ROLE_ADMIN_SUPER"
+  },
+  {
+    "loginId": "sample_operator",
+    "password": "SamplePassword123!",
+    "name": "운영 관리자(예시)",
+    "email": "sample_ops@example.com",
+    "phone": "010-0000-0001",
+    "role": "ROLE_ADMIN_OPS"
+  }
+]

@@ -1,0 +1,17 @@
+[
+  {
+    "code": "CAT-PERIPHERAL",
+    "name": "전자기기/주변기기",
+    "description": "키보드, 마우스, 멀티허브 등 IT 전자기기 및 액세서리 제품군"
+  },
+  {
+    "code": "CAT-DISPLAY",
+    "name": "디스플레이",
+    "description": "모니터, 사이니지, 패널 등 디스플레이 제품군"
+  },
+  {
+    "code": "CAT-LOGISTICS",
+    "name": "물류자재/포장재",
+    "description": "파렛트, 포장 박스, 완충재 등 물류 전용 소모 자재"
+  }
+]

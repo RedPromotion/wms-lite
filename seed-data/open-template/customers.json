@@ -1,0 +1,38 @@
+[
+  {
+    "code": "CUST-SAMPLE-01",
+    "name": "샘플 고객사 A사",
+    "businessNo": "111-22-33333",
+    "ceoName": "박고객",
+    "phone": "1588-0001",
+    "email": "customer_a@example.com",
+    "deliveryAddresses": [
+      {
+        "name": "수도권 제1 물류센터",
+        "receiverName": "김수령",
+        "receiverPhone": "010-1234-5678",
+        "zipCode": "12345",
+        "address": "경기도 용인시 처인구 물류로 10",
+        "defaultAddress": true
+      }
+    ]
+  },
+  {
+    "code": "CUST-SAMPLE-02",
+    "name": "샘플 고객사 B사",
+    "businessNo": "222-33-44444",
+    "ceoName": "최발주",
+    "phone": "1588-0002",
+    "email": "customer_b@example.com",
+    "deliveryAddresses": [
+      {
+        "name": "중부 허브 물류센터",
+        "receiverName": "이접수",
+        "receiverPhone": "010-2345-6789",
+        "zipCode": "67890",
+        "address": "충청북도 청주시 흥덕구 직지로 20",
+        "defaultAddress": true
+      }
+    ]
+  }
+]

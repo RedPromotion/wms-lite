@@ -1,0 +1,134 @@
+/* 검색형 자동완성 셀렉트 컴포넌트 스타일 */
+.container {
+  position: relative;
+  display: block;
+  width: 100%;
+}
+
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input {
+  padding: 0.55rem 2.25rem 0.55rem 0.75rem;
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  color: #f8fafc;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  cursor: text;
+  transition: all 0.2s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* 우측 컨트롤 버튼 그룹 (X 지우기 + Chevron 화살표) */
+.actionGroup {
+  position: absolute;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  pointer-events: none;
+  /* 아이콘 클릭 가능 처리는 내부 개별 지정 */
+}
+
+.clearBtn {
+  pointer-events: auto;
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.clearBtn:hover {
+  color: #cbd5e1;
+  background: #334155;
+}
+
+.chevronIcon {
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* 드롭다운 후보 목록 팝업 */
+.dropdownList {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  width: 100%;
+  max-height: 220px;
+  overflow-y: auto;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+  z-index: 9999;
+  min-width: 220px;
+  padding: 0.35rem;
+  margin: 0;
+  list-style: none;
+}
+
+/* Custom Scrollbar for Dropdown */
+.dropdownList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dropdownList::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+.dropdownList::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
+
+.dropdownItem {
+  padding: 0.6rem 0.75rem;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropdownItem:hover {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.dropdownItemActive {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.emptyText {
+  padding: 0.75rem;
+  font-size: 0.85rem;
+  color: #64748b;
+  text-align: center;
+}

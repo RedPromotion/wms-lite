@@ -1,0 +1,152 @@
+.sidebar {
+  width: var(--sidebar-width);
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--header-height));
+  padding: 1.25rem 0.5rem;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+.sectionTitle {
+  padding: 0 0.75rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+/* 폴더 헤더 버튼 */
+.folderHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.75rem;
+  border: none;
+  background-color: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.folderHeader:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-main);
+}
+
+.folderHeaderActive {
+  color: var(--primary);
+}
+
+.folderHeaderContent {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.chevronIcon {
+  display: flex;
+  align-items: center;
+  transition: transform 0.2s ease;
+  color: var(--text-dim);
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+  color: var(--text-sub);
+}
+
+/* 서브메뉴 재귀 그룹 컨테이너 */
+.subGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin-top: 0.1rem;
+  margin-bottom: 0.1rem;
+}
+
+.subGroupIndent {
+  margin-left: 0.6rem;
+  padding-left: 0.4rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* 단일 페이지 링크 */
+.navLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  background-color: transparent;
+  transition: all 0.15s ease-in-out;
+}
+
+.navLink:hover {
+  background-color: var(--bg-tertiary);
+  color: var(--text-main);
+}
+
+.activeNavLink {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.75rem;
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  background-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  transition: all 0.15s ease-in-out;
+}
+
+.linkContent {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.badge {
+  font-size: 0.68rem;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.footer {
+  margin-top: auto;
+  padding: 0.8rem;
+  background-color: rgba(30, 41, 59, 0.4);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(51, 65, 85, 0.4);
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  text-align: center;
+}
+
+.versionTitle {
+  display: block;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 2px;
+}

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!--
+        로그 패턴 설명:
+          %d{yyyy-MM-dd HH:mm:ss} → 날짜 + 시간 (초 단위, 예: 2026-08-05 12:53:01)
+          [%-5level]              → 로그 레벨 (WARN, ERROR 등, 5자리 고정)
+          [%logger{36}]          → 클래스명 (최대 36자 축약)
+          %msg                   → 로그 메시지
+          %n                     → 줄바꿈
+          %ex                    → 스택 트레이스 (예외 객체 포함 시 자동 출력)
+    -->
+    <property name="LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss} [%-5level] [%logger{36}] %msg%n%ex"/>
+    <property name="LOG_DIR"   value="logs"/>
+    <property name="LOG_FILE"  value="${LOG_DIR}/app.log"/>
+
+    <!-- ===== 콘솔 Appender ===== -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+
+    <!-- ===== 파일 Appender (일별 롤링) ===== -->
+    <!--
+        현재 활성 파일 : logs/app.log
+        자정이 지나면  : logs/app-2026-08-05.log 로 이름이 바뀌고 새 app.log 생성
+        보관 기간      : 최대 30일치 보관 후 자동 삭제
+    -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_FILE}</file>
+        <encoder>
+            <pattern>${LOG_PATTERN}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 날짜별 파일명 형식 -->
+            <fileNamePattern>${LOG_DIR}/app-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 보관 최대 일수 (30일 초과분 자동 삭제) -->
+            <maxHistory>30</maxHistory>
+            <!-- 전체 파일 용량 상한 (선택, 초과 시 오래된 것부터 삭제) -->
+            <totalSizeCap>1GB</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <!-- ===== Spring 프로파일별 로그 레벨 ===== -->
+    <!-- 개발 환경: DEBUG 이상 출력 -->
+    <springProfile name="dev">
+        <root level="DEBUG">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- 운영 환경: INFO 이상 출력 -->
+    <springProfile name="prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+    <!-- 프로파일 미설정 시 기본값: INFO -->
+    <springProfile name="!dev &amp; !prod">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+    </springProfile>
+
+</configuration>

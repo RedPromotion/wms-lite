@@ -1,0 +1,47 @@
+[
+  {
+    "loginId": "supervisor01",
+    "password": "Password123!",
+    "name": "김현장",
+    "email": "supervisor01@wms.com",
+    "phone": "010-1000-0001",
+    "department": "WAREHOUSE_OPERATOR",
+    "role": "ROLE_MANAGER"
+  },
+  {
+    "loginId": "inbound01",
+    "password": "Password123!",
+    "name": "이입고",
+    "email": "inbound01@wms.com",
+    "phone": "010-1000-0002",
+    "department": "INBOUND_OPERATOR",
+    "role": "ROLE_OPERATOR"
+  },
+  {
+    "loginId": "outbound01",
+    "password": "Password123!",
+    "name": "최출고",
+    "email": "outbound01@wms.com",
+    "phone": "010-1000-0003",
+    "department": "OUTBOUND_OPERATOR",
+    "role": "ROLE_OPERATOR"
+  },
+  {
+    "loginId": "worker01",
+    "password": "Password123!",
+    "name": "홍길동",
+    "email": "worker01@wms.com",
+    "phone": "010-1000-0004",
+    "department": "WAREHOUSE_OPERATOR",
+    "role": "ROLE_OPERATOR"
+  },
+  {
+    "loginId": "auditor01",
+    "password": "Password123!",
+    "name": "박재고",
+    "email": "auditor01@wms.com",
+    "phone": "010-1000-0005",
+    "department": "INVENTORY_AUDITOR",
+    "role": "ROLE_VIEWER"
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "code": "CUST-COUPANG",
+    "name": "(주)쿠팡 풀필먼트",
+    "businessNo": "211-88-54321",
+    "ceoName": "강한승",
+    "phone": "1577-7011",
+    "email": "b2b@coupang.com",
+    "deliveryAddresses": [
+      {
+        "name": "쿠팡 덕평 메인 풀필먼트센터",
+        "receiverName": "김덕평",
+        "receiverPhone": "031-639-9001",
+        "zipCode": "17380",
+        "address": "경기도 이천시 마장면 덕평로 845",
+        "defaultAddress": true
+      }
+    ]
+  },
+  {
+    "code": "CUST-NAVER",
+    "name": "네이버 스마트스토어(주)",
+    "businessNo": "220-81-62517",
+    "ceoName": "최수연",
+    "phone": "1588-3820",
+    "email": "partner@naver.com",
+    "deliveryAddresses": [
+      {
+        "name": "네이버 스마트스토어 집하장 (성남)",
+        "receiverName": "이성남",
+        "receiverPhone": "031-784-1234",
+        "zipCode": "13561",
+        "address": "경기도 성남시 분당구 불정로 6",
+        "defaultAddress": true
+      }
+    ]
+  },
+  {
+    "code": "CUST-EMART",
+    "name": "(주)이마트 쓱닷컴",
+    "businessNo": "104-86-50912",
+    "ceoName": "강희석",
+    "phone": "1588-4349",
+    "email": "ssg@emart.com",
+    "deliveryAddresses": [
+      {
+        "name": "SSG 쓱배송 김포 온라인 물류센터",
+        "receiverName": "박김포",
+        "receiverPhone": "031-998-5678",
+        "zipCode": "10040",
+        "address": "경기도 김포시 고촌읍 아라육로 57",
+        "defaultAddress": true
+      }
+    ]
+  }
+]

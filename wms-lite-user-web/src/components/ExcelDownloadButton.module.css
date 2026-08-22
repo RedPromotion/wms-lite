@@ -1,0 +1,39 @@
+.excelBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #107c41;
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.excelBtn:hover:not(:disabled) {
+  background-color: #dcfce7;
+  border-color: #86efac;
+  color: #047857;
+  transform: translateY(-1px);
+}
+
+.excelBtn:active:not(:disabled) {
+  transform: translateY(0);
+  background-color: #bbf7d0;
+}
+
+.excelBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  background-color: #f3f4f6;
+  border-color: #e5e7eb;
+  color: #9ca3af;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+}

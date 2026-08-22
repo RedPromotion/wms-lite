@@ -1,0 +1,18 @@
+[
+  {
+    "loginId": "superadmin",
+    "password": "Password123!",
+    "name": "플랫폼 최고 관리자",
+    "email": "superadmin@wms.com",
+    "phone": "010-9000-0001",
+    "role": "ROLE_ADMIN_SUPER"
+  },
+  {
+    "loginId": "opsadmin",
+    "password": "Password123!",
+    "name": "시스템 운영 관리자",
+    "email": "opsadmin@wms.com",
+    "phone": "010-9000-0002",
+    "role": "ROLE_ADMIN_OPS"
+  }
+]

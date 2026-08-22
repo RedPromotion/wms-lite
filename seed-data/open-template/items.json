@@ -1,0 +1,29 @@
+[
+  {
+    "code": "ITM-SAMPLE-001",
+    "name": "샘플 무선 키보드 K100",
+    "barcode": "880123450001",
+    "specification": "450x140x25mm / 500g",
+    "unit": "EA",
+    "categoryCode": "CAT-PERIPHERAL",
+    "supplierCode": "SUP-SAMPLE-01"
+  },
+  {
+    "code": "ITM-SAMPLE-002",
+    "name": "샘플 광학 마우스 M100",
+    "barcode": "880123450002",
+    "specification": "110x60x30mm / 90g",
+    "unit": "EA",
+    "categoryCode": "CAT-PERIPHERAL",
+    "supplierCode": "SUP-SAMPLE-01"
+  },
+  {
+    "code": "ITM-SAMPLE-003",
+    "name": "샘플 27인치 FHD 모니터",
+    "barcode": "880123450003",
+    "specification": "610x360x40mm / 4.5kg",
+    "unit": "BOX",
+    "categoryCode": "CAT-DISPLAY",
+    "supplierCode": "SUP-SAMPLE-02"
+  }
+]

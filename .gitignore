@@ -1,0 +1,50 @@
+# Local Agent & Tool Configs
+.agents/
+
+# Personal Drafts & Notes
+wms-lite-md/
+utils/
+
+# Environment & Secrets (비밀키 및 암호 보안 제외)
+.env
+.env.*
+*.env
+*.pem
+*.key
+seed-data/secrets/
+**/seed-data/secrets/
+
+# Local Database files (H2 File Mode)
+data/
+*.mv.db
+*.trace.db
+
+# Dependency directories
+node_modules/
+.gradle/
+
+# Build & Output directories
+build/
+target/
+dist/
+out/
+*.jar
+*.war
+
+# Backup & Zip files
+*.zip
+*.tar.gz
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.bak
+.DS_Store
+Thumbs.db
