@@ -256,7 +256,7 @@ erDiagram
 - **Database & Cloud**: Neon.tech (Cloud Serverless PostgreSQL), H2 (In-Memory / File), MSSQL
 - **Cloud Hosting & Deployment**: Railway (PaaS - Nixpacks Builder)
 - **Docs & Testing**: SpringDoc OpenAPI 2.8.5 (Swagger UI), JUnit 5, Mockito
-- **Build Tool**: Gradle (Kotlin DSL)
+- **Build Tool**: Gradle 8.14 (Kotlin DSL)
 
 ### Frontend
 - **Framework & Core**: React 18, TypeScript 5.x
