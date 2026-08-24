@@ -9,7 +9,7 @@ spring:
 
 security:
   jwt:
-    secret: ${JWT_SECRET:wms-lite-development-secret-key-change-me-please-32-bytes}
+    secret: ${zX7vB9nM2kL4pQ6rT8wY0uI2oP5aS7dF9gH1jK3mN5bV7cC9xZ1aS3dF5gH7jK9m}
     access-token-validity-seconds: ${JWT_ACCESS_TOKEN_VALIDITY_SECONDS:3600}
     refresh-token-validity-seconds: ${JWT_REFRESH_TOKEN_VALIDITY_SECONDS:1209600}
 
