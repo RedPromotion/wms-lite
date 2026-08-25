@@ -23,7 +23,7 @@ NIXPACKS_JDK_VERSION = "21"
 [deploy]
 # 빌드된 JAR 실행 및 JVM 메모리 제한 옵션 적용 (-Xms128m -Xmx384m)
 # 사유: Spring Boot 기본 JVM의 과도한 램 점유(1GB+)를 방지하여 Railway $5.00 무료 크레딧 한도 내에서 24시간 365일 무료 가동하기 위함.
-startCommand = "java -Xms128m -Xmx384m -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-8080} -jar build/libs/wms-lite-0.0.1-SNAPSHOT.jar"
+startCommand = "java -Xms128m -Xmx384m -Dserver.address=0.0.0.0 -Dserver.port=${PORT:-8080} -Dspring.profiles.active=${SPRING_PROFILES_ACTIVE:-demo} -jar build/libs/wms-lite-0.0.1-SNAPSHOT.jar"
 healthcheckPath = "/actuator/health"
 healthcheckTimeout = 180
 restartPolicyType = "ON_FAILURE"
