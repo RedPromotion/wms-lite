@@ -5,6 +5,8 @@ import com.wms.wms_lite.domain.user.member.dto.response.LoginHistoryResponse;
 import com.wms.wms_lite.domain.user.member.dto.response.MemberLoginResponse;
 import com.wms.wms_lite.domain.user.member.entity.LoginHistory;
 import com.wms.wms_lite.domain.user.member.entity.Member;
+import com.wms.wms_lite.domain.user.member.enums.Department;
+import com.wms.wms_lite.domain.user.member.enums.MemberRole;
 import com.wms.wms_lite.domain.user.member.exception.MemberErrorCode;
 import com.wms.wms_lite.domain.user.member.exception.MemberException;
 import com.wms.wms_lite.domain.user.member.repository.LoginHistoryRepository;
@@ -15,6 +17,7 @@ import com.wms.wms_lite.global.security.jwt.JwtTokenProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +35,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,6 +49,9 @@ public class MemberLoginService {
     private final JwtTokenProvider jwtTokenProvider;
     private final TransactionTemplate transactionTemplate;
 
+    @Value("${app.demo-login.enabled:true}")
+    private boolean demoLoginEnabled;
+
     @Transactional
     public MemberLoginResponse login(MemberLoginRequest request) {
         HttpServletRequest httpRequest = getCurrentHttpRequest();
@@ -52,6 +59,7 @@ public class MemberLoginService {
         String userAgent = getUserAgent(httpRequest);
 
         Member member = memberRepository.findByLoginId(request.loginId())
+                .or(() -> provisionDemoMemberIfMatched(request))
                 .orElseThrow(() -> {
                     recordLoginHistory(request.loginId(), clientIp, userAgent, "FAILED");
                     return new MemberException(MemberErrorCode.MEMBER_NOT_FOUND);
@@ -111,6 +119,29 @@ public class MemberLoginService {
                 accessToken,
                 refreshToken,
                 expiresAt);
+    }
+
+    private Optional<Member> provisionDemoMemberIfMatched(MemberLoginRequest request) {
+        if (!demoLoginEnabled) {
+            return Optional.empty();
+        }
+        if (!"sample_supervisor".equals(request.loginId()) || !"SamplePassword123!".equals(request.password())) {
+            return Optional.empty();
+        }
+
+        Member member = new Member();
+        member.setLoginId("sample_supervisor");
+        member.setPassword(passwordEncoder.encode("SamplePassword123!"));
+        member.setName("현장 총괄(예시)");
+        member.setEmail("supervisor@example.com");
+        member.setPhone("010-0000-0002");
+        member.setDepartment(Department.WAREHOUSE_OPERATOR);
+        member.setRole(MemberRole.ROLE_MANAGER);
+        member.setStatus(AccountStatus.ACTIVE);
+
+        Member saved = memberRepository.save(member);
+        log.info("▶ 공개 데모 계정 자동 생성: {}", saved.getLoginId());
+        return Optional.of(saved);
     }
 
     @Transactional

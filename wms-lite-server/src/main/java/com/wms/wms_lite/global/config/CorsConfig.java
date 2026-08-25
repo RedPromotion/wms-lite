@@ -1,5 +1,7 @@
 package com.wms.wms_lite.global.config;
 
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -18,8 +20,12 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // 전 세계 모든 도메인(GitHub Pages, Vercel, Localhost 등)의 Cross-Origin 요청 허용
-        config.setAllowedOriginPatterns(List.of("*"));
+        List<String> origins = new ArrayList<>(new LinkedHashSet<>(allowedOrigins));
+        if (!origins.contains("https://redpromotion.github.io")) {
+            origins.add("https://redpromotion.github.io");
+        }
+
+        config.setAllowedOrigins(origins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
