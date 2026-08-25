@@ -91,7 +91,7 @@ export default function ApiPlayground() {
     setIsAuthLoading(true);
     setErrorDetails(null);
     try {
-      const url = isAdmin ? '/api/admins/login' : '/api/members/login';
+      const url = isAdmin ? '/api/admin/admins/login' : '/api/members/login';
       const response = await apiClient.post(url, {
         loginId,
         password: loginPassword

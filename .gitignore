@@ -9,6 +9,8 @@ utils/
 .env
 .env.*
 *.env
+!.env.example
+!.env.*.example
 *.pem
 *.key
 seed-data/secrets/
@@ -22,6 +24,7 @@ data/
 # Dependency directories
 node_modules/
 .gradle/
+.npm-cache/
 
 # Build & Output directories
 build/

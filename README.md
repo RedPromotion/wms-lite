@@ -6,8 +6,8 @@
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x_/_4.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring_Security-JWT-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
-![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-6.x-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 
 <br/>
 
@@ -86,8 +86,8 @@ flowchart TD
 | 모듈명 | 기술 스택 | 주 사용자 | 주요 기능 및 역할 |
 | :--- | :--- | :--- | :--- |
 | **`wms-lite/wms-lite`** | Java 21, Spring Boot 3.x, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
-| **`wms-lite-user-web`** | React 18, TypeScript, Vite | 현장 작업자 / 현장 관리자 | 입고 적치(Putaway), 출고 피킹(Picking), 로케이션 이동, 실시간 재고 조회 |
-| **`wms-lite-admin-web`** | React 18, TypeScript, Vite | 플랫폼 / 시스템 관리자 | 마스터 기준정보(창고/로케이션/품목/거래처) 관리, 계정/권한 통제, 전체 모니터링 |
+| **`wms-lite-user-web`** | React 19, TypeScript 6, Vite 8 | 현장 작업자 / 현장 관리자 | 입고 적치(Putaway), 출고 피킹(Picking), 로케이션 이동, 실시간 재고 조회 |
+| **`wms-lite-admin-web`** | React 19, TypeScript 6, Vite 8 | 플랫폼 / 시스템 관리자 | 마스터 기준정보(창고/로케이션/품목/거래처) 관리, 계정/권한 통제, 전체 모니터링 |
 | **`wms-lite-test-web`** | React, Web | 개발자 / QA | 신속한 API 기능 검증 및 시나리오 테스트용 단일 페이지 |
 
 ---
@@ -259,8 +259,8 @@ erDiagram
 - **Build Tool**: Gradle 8.14 (Kotlin DSL)
 
 ### Frontend
-- **Framework & Core**: React 18, TypeScript 5.x
-- **Build Tool & Routing**: Vite, React Router DOM
+- **Framework & Core**: React 19, TypeScript 6.x
+- **Build Tool & Routing**: Vite 8, React Router DOM
 - **Styling**: CSS Modules, Vanilla CSS (Design Tokens System)
 - **Architecture**: Feature-Based Architecture
 
@@ -317,7 +317,7 @@ cd wms-lite/wms-lite
 ./gradlew bootRun
 ```
 * **Swagger UI (API 명세서)**: `http://localhost:8080/swagger-ui/index.html`
-* **H2 Database Console**: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:wmsdb`)
+* **H2 Database Console**: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/wms_lite_db`)
 
 #### 프론트엔드 (`wms-lite-user-web`)
 ```bash
@@ -339,6 +339,7 @@ npm run dev
 | `DB_URL` | `jdbc:postgresql://<neon-host>/<dbname>?sslmode=require` |
 | `DB_USERNAME` | `neondb_owner` |
 | `DB_PASSWORD` | `<neon-password>` |
+| `JPA_DDL_AUTO` | `update` (초기 배포) / `validate` (스키마 안정화 후) |
 | `JWT_SECRET` | 32자 이상의 무작위 임의 시크릿 문자열 |
 | `CORS_ALLOWED_ORIGINS` | `https://your-frontend-domain.com` |
 

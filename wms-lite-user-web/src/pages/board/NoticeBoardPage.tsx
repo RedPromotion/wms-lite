@@ -89,7 +89,7 @@ export const NoticeBoardPage: React.FC = () => {
       const detail = await getNoticeDetail(id);
       setSelectedNotice(detail);
       setIsDetailOpen(true);
-    } catch (err: any) {
+    } catch {
       toast.error('공지사항 상세 정보를 불러오는데 실패했습니다.');
     }
   };
@@ -114,7 +114,7 @@ export const NoticeBoardPage: React.FC = () => {
       setEditingId(null);
       setFormData({ title: '', content: '', isPinned: false, isPopup: false });
       fetchNotices();
-    } catch (err: any) {
+    } catch {
       toast.error(editingId ? '공지사항 수정 실패' : '공지사항 등록 실패');
     }
   };
@@ -127,7 +127,7 @@ export const NoticeBoardPage: React.FC = () => {
       toast.success('공지사항이 삭제되었습니다.');
       if (isDetailOpen) setIsDetailOpen(false);
       fetchNotices();
-    } catch (err: any) {
+    } catch {
       toast.error('삭제 처리 중 오류가 발생했습니다.');
     }
   };
@@ -144,7 +144,7 @@ export const NoticeBoardPage: React.FC = () => {
       // 상세 정보 갱신
       const updated = await getNoticeDetail(selectedNotice.id);
       setSelectedNotice(updated);
-    } catch (err: any) {
+    } catch {
       toast.error('댓글 작성에 실패했습니다.');
     }
   };
@@ -157,7 +157,7 @@ export const NoticeBoardPage: React.FC = () => {
       toast.success('댓글이 삭제되었습니다.');
       const updated = await getNoticeDetail(selectedNotice.id);
       setSelectedNotice(updated);
-    } catch (err: any) {
+    } catch {
       toast.error('댓글 삭제 실패');
     }
   };

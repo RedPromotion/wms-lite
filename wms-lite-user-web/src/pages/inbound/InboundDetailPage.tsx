@@ -40,7 +40,7 @@ export const InboundDetailPage: React.FC = () => {
     try {
       const data = await getInboundApi(inboundId);
       setInbound(data);
-    } catch (err: any) {
+    } catch {
       toast.error('입고 상세 정보를 불러오는 데 실패했습니다.');
       setInbound(null);
     } finally {

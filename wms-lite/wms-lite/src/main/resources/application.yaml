@@ -9,13 +9,13 @@ spring:
 
 security:
   jwt:
-    secret: ${zX7vB9nM2kL4pQ6rT8wY0uI2oP5aS7dF9gH1jK3mN5bV7cC9xZ1aS3dF5gH7jK9m}
+    secret: ${JWT_SECRET:wms-lite-local-development-secret-key-change-for-prod}
     access-token-validity-seconds: ${JWT_ACCESS_TOKEN_VALIDITY_SECONDS:3600}
     refresh-token-validity-seconds: ${JWT_REFRESH_TOKEN_VALIDITY_SECONDS:1209600}
 
 app:
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174}
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:5174,http://localhost:3000,http://127.0.0.1:5173}
   seed-data:
     enabled: ${SEED_DATA_ENABLED:true}
     mode: ${SEED_DATA_MODE:auto} 

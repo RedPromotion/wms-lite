@@ -94,7 +94,7 @@ export const GeneralBoardPage: React.FC = () => {
       const detail = await getPostDetail(id);
       setSelectedPost(detail);
       setIsDetailOpen(true);
-    } catch (err: any) {
+    } catch {
       toast.error('게시글 상세 정보를 불러오는데 실패했습니다.');
     }
   };
@@ -119,7 +119,7 @@ export const GeneralBoardPage: React.FC = () => {
       setEditingId(null);
       setFormData({ title: '', content: '', category: 'GENERAL', isSecret: false });
       fetchPosts();
-    } catch (err: any) {
+    } catch {
       toast.error(editingId ? '게시글 수정 실패' : '게시글 등록 실패');
     }
   };
@@ -132,7 +132,7 @@ export const GeneralBoardPage: React.FC = () => {
       toast.success('게시글이 삭제되었습니다.');
       if (isDetailOpen) setIsDetailOpen(false);
       fetchPosts();
-    } catch (err: any) {
+    } catch {
       toast.error('삭제 처리 중 오류가 발생했습니다.');
     }
   };
@@ -148,7 +148,7 @@ export const GeneralBoardPage: React.FC = () => {
       setCommentInput('');
       const updated = await getPostDetail(selectedPost.id);
       setSelectedPost(updated);
-    } catch (err: any) {
+    } catch {
       toast.error('댓글 작성에 실패했습니다.');
     }
   };
@@ -161,7 +161,7 @@ export const GeneralBoardPage: React.FC = () => {
       toast.success('댓글이 삭제되었습니다.');
       const updated = await getPostDetail(selectedPost.id);
       setSelectedPost(updated);
-    } catch (err: any) {
+    } catch {
       toast.error('댓글 삭제 실패');
     }
   };
