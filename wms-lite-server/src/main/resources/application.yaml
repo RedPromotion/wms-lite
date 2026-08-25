@@ -28,3 +28,12 @@ springdoc:
     disable-swagger-default-url: true
   api-docs:
     path: /v3/api-docs
+
+management:
+  endpoint:
+    health:
+      probes:
+        enabled: true
+  health:
+    db:
+      enabled: false
