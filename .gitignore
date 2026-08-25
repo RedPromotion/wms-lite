@@ -2,10 +2,10 @@
 .agents/
 
 # Personal Drafts & Notes & Test Tools
-wms-lite-md/
-utils/
+/wms-lite-md/
+/utils/
 tracked_files.txt
-wms-lite-test-web/
+/wms-lite-test-web/
 
 # Environment & Secrets (비밀키 및 암호 보안 제외)
 .env
