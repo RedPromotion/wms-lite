@@ -134,14 +134,16 @@ public class MemberLoginService {
 
     private void recordLoginHistory(String loginId, String ipAddress, String userAgent, String status) {
         try {
-            LoginHistory history = new LoginHistory();
-            history.setLoginId(loginId);
-            history.setIpAddress(ipAddress != null ? ipAddress : "127.0.0.1");
-            history.setUserAgent(
-                    userAgent != null && userAgent.length() > 250 ? userAgent.substring(0, 250) : userAgent);
-            history.setStatus(status);
-            history.setLoginAt(LocalDateTime.now());
-            loginHistoryRepository.save(history);
+            transactionTemplate.executeWithoutResult(txStatus -> {
+                LoginHistory history = new LoginHistory();
+                history.setLoginId(loginId);
+                history.setIpAddress(ipAddress != null ? ipAddress : "127.0.0.1");
+                history.setUserAgent(
+                        userAgent != null && userAgent.length() > 250 ? userAgent.substring(0, 250) : userAgent);
+                history.setStatus(status);
+                history.setLoginAt(LocalDateTime.now());
+                loginHistoryRepository.save(history);
+            });
         } catch (Exception ignored) {
             // 이력 저장 실패가 메인 로그인 트랜잭션을 방해하지 않도록 처리
         }

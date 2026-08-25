@@ -53,7 +53,6 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@Profile("!prod")
 @Transactional
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
