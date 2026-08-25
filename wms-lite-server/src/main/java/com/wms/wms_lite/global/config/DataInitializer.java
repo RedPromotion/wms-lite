@@ -60,7 +60,6 @@ import java.util.List;
  */
 @Slf4j
 @Component
-@Transactional
 @RequiredArgsConstructor
 public class DataInitializer implements CommandLineRunner {
 
@@ -233,6 +232,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 1. 관리자 계정 초기화 (Admins)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initAdmins(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "admins.json")) {
             if (is == null) return;
@@ -257,6 +257,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 2. 회원 계정 초기화 (Members)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initMembers(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "members.json")) {
             if (is == null) return;
@@ -282,6 +283,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 3. 창고 & 로케이션 초기화 (Warehouses & Locations)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initWarehouses(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "warehouses.json")) {
             if (is == null) return;
@@ -320,6 +322,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 4. 공급업체 초기화 (Suppliers)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initSuppliers(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "suppliers.json")) {
             if (is == null) return;
@@ -345,6 +348,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 5. 고객사 & 배송지 초기화 (Customers & DeliveryAddresses)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initCustomers(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "customers.json")) {
             if (is == null) return;
@@ -389,6 +393,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 6. 품목 카테고리 초기화 (Categories)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initCategories(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "categories.json")) {
             if (is == null) return;
@@ -409,6 +414,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 7. 품목 초기화 (Items)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initItems(File seedDir) throws IOException {
         try (InputStream is = getSeedInputStream(seedDir, "items.json")) {
             if (is == null) return;
@@ -440,6 +446,7 @@ public class DataInitializer implements CommandLineRunner {
     // ─────────────────────────────────────────────────────────────────
     // 8. 수불 이력 마이그레이션 및 샘플 생성 (StockHistories)
     // ─────────────────────────────────────────────────────────────────
+    @Transactional
     private void initStockHistories() {
         List<StockHistory> histories = stockHistoryRepository.findAll();
 
