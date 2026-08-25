@@ -468,6 +468,16 @@ wms-lite (Root Monorepo)
 
 ---
 
+### 공개 데모
+
+- **Demo URL**: `https://redpromotion.github.io/wms-lite`
+- **ID**: `sample_supervisor`
+- **Password**: `SamplePassword123!`
+
+※ 공개 데모용 계정입니다. 데모 환경은 H2 in-memory DB를 사용하며, 재배포 시 데이터가 초기화됩니다.
+
+---
+
 ### 로컬 실행
 
 #### 백엔드 (`wms-lite-server`)
