@@ -57,7 +57,7 @@ export const AppRouter: React.FC = () => {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
         {/* 루트 접속 시 로그인 여부에 따른 리다이렉트 */}
         <Route
