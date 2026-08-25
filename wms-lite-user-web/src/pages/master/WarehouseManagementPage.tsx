@@ -5,6 +5,7 @@ import {
   Trash2,
   Building2,
   CheckSquare,
+  MapPin,
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { PageHeader, PageToolbar, PageActionBar } from '../../components/PageHeader';
@@ -12,6 +13,7 @@ import { DataGrid, type Column } from '../../components/DataGrid';
 import { SearchInput } from '../../components/SearchInput';
 import { ServerErrorPanel } from '../../components/ServerErrorPanel';
 import { WarehouseFormModal, type MockWarehouse } from './WarehouseFormModal';
+import { LocationManagementModal } from './LocationManagementModal';
 import {
   getWarehousesApi,
   createWarehouseApi,
@@ -35,6 +37,10 @@ export const WarehouseManagementPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<'CREATE' | 'EDIT'>('CREATE');
   const [editingWarehouse, setEditingWarehouse] = useState<MockWarehouse | null>(null);
+
+  // 로케이션 관리 모달 상태
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [selectedWarehouseForLocation, setSelectedWarehouseForLocation] = useState<MockWarehouse | null>(null);
 
   const fetchWarehouses = useCallback(async (isInitial = false) => {
     if (isInitial) {
@@ -107,6 +113,11 @@ export const WarehouseManagementPage: React.FC = () => {
     setModalMode('EDIT');
     setEditingWarehouse(warehouse);
     setIsModalOpen(true);
+  };
+
+  const handleOpenLocationModal = (warehouse: MockWarehouse) => {
+    setSelectedWarehouseForLocation(warehouse);
+    setIsLocationModalOpen(true);
   };
 
   const handleDeleteRow = async (warehouse: MockWarehouse) => {
@@ -199,7 +210,15 @@ export const WarehouseManagementPage: React.FC = () => {
       align: 'center',
       render: (wh) => (
         <div className={styles.rowActionGroup} style={{ justifyContent: 'center' }}>
-          <button className={styles.iconBtn} title="수정" onClick={() => handleEditRow(wh)}>
+          <button
+            className={styles.locationBtn}
+            title="로케이션(위치) 관리"
+            onClick={() => handleOpenLocationModal(wh)}
+          >
+            <MapPin size={13} />
+            <span>위치 관리</span>
+          </button>
+          <button className={styles.iconBtn} title="창고 정보 수정" onClick={() => handleEditRow(wh)}>
             <Edit2 size={14} />
           </button>
           <button
@@ -335,6 +354,12 @@ export const WarehouseManagementPage: React.FC = () => {
         mode={modalMode}
         initialData={editingWarehouse}
         onSubmit={handleFormSubmit}
+      />
+
+      <LocationManagementModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        warehouse={selectedWarehouseForLocation}
       />
     </div>
   );
