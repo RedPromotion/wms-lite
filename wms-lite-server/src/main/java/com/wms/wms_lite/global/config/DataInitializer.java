@@ -43,8 +43,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.core.io.ClassPathResource;
+
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -88,12 +92,11 @@ public class DataInitializer implements CommandLineRunner {
         }
 
         File seedDir = resolveSeedDirectory();
-        if (seedDir == null || !seedDir.exists() || !seedDir.isDirectory()) {
-            log.warn("▶ [DataInitializer] 시드 데이터 디렉토리를 찾을 수 없어 초기화를 건너뜁니다.");
-            return;
+        if (seedDir != null) {
+            log.info("▶ [DataInitializer] WMS 시드 데이터 초기화 시작... (디렉토리 로드 경로: {})", seedDir.getAbsolutePath());
+        } else {
+            log.info("▶ [DataInitializer] WMS 시드 데이터 초기화 시작... (Classpath open-template 로드)");
         }
-
-        log.info("▶ [DataInitializer] WMS 시드 데이터 초기화 시작... (로드 경로: {})", seedDir.getAbsolutePath());
 
         try {
             initAdmins(seedDir);
@@ -213,26 +216,40 @@ public class DataInitializer implements CommandLineRunner {
         return files != null && files.length > 0;
     }
 
+    private InputStream getSeedInputStream(File seedDir, String filename) throws IOException {
+        if (seedDir != null) {
+            File file = new File(seedDir, filename);
+            if (file.exists()) {
+                return new FileInputStream(file);
+            }
+        }
+        ClassPathResource resource = new ClassPathResource("seed-data/open-template/" + filename);
+        if (resource.exists()) {
+            return resource.getInputStream();
+        }
+        return null;
+    }
+
     // ─────────────────────────────────────────────────────────────────
     // 1. 관리자 계정 초기화 (Admins)
     // ─────────────────────────────────────────────────────────────────
     private void initAdmins(File seedDir) throws IOException {
-        File file = new File(seedDir, "admins.json");
-        if (!file.exists()) return;
-
-        List<AdminSeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (AdminSeedDto dto : list) {
-            if (adminRepository.findByLoginId(dto.loginId()).isEmpty()) {
-                Admin admin = new Admin();
-                admin.setLoginId(dto.loginId());
-                admin.setPassword(passwordEncoder.encode(dto.password()));
-                admin.setName(dto.name());
-                admin.setEmail(dto.email());
-                admin.setPhone(dto.phone());
-                admin.setRole(dto.role() != null ? dto.role() : AdminRole.ROLE_ADMIN_OPS);
-                admin.setStatus(AccountStatus.ACTIVE);
-                adminRepository.save(admin);
-                log.info("  ▷ 관리자 생성: {} ({})", dto.loginId(), admin.getRole());
+        try (InputStream is = getSeedInputStream(seedDir, "admins.json")) {
+            if (is == null) return;
+            List<AdminSeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (AdminSeedDto dto : list) {
+                if (adminRepository.findByLoginId(dto.loginId()).isEmpty()) {
+                    Admin admin = new Admin();
+                    admin.setLoginId(dto.loginId());
+                    admin.setPassword(passwordEncoder.encode(dto.password()));
+                    admin.setName(dto.name());
+                    admin.setEmail(dto.email());
+                    admin.setPhone(dto.phone());
+                    admin.setRole(dto.role() != null ? dto.role() : AdminRole.ROLE_ADMIN_OPS);
+                    admin.setStatus(AccountStatus.ACTIVE);
+                    adminRepository.save(admin);
+                    log.info("  ▷ 관리자 생성: {} ({})", dto.loginId(), admin.getRole());
+                }
             }
         }
     }
@@ -241,23 +258,23 @@ public class DataInitializer implements CommandLineRunner {
     // 2. 회원 계정 초기화 (Members)
     // ─────────────────────────────────────────────────────────────────
     private void initMembers(File seedDir) throws IOException {
-        File file = new File(seedDir, "members.json");
-        if (!file.exists()) return;
-
-        List<MemberSeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (MemberSeedDto dto : list) {
-            if (memberRepository.findByLoginId(dto.loginId()).isEmpty()) {
-                Member m = new Member();
-                m.setLoginId(dto.loginId());
-                m.setPassword(passwordEncoder.encode(dto.password()));
-                m.setName(dto.name());
-                m.setEmail(dto.email());
-                m.setPhone(dto.phone());
-                m.setDepartment(dto.department() != null ? dto.department() : Department.WAREHOUSE_OPERATOR);
-                m.setRole(dto.role() != null ? dto.role() : MemberRole.ROLE_OPERATOR);
-                m.setStatus(AccountStatus.ACTIVE);
-                memberRepository.save(m);
-                log.info("  ▷ 회원 생성: {} ({})", dto.loginId(), dto.role());
+        try (InputStream is = getSeedInputStream(seedDir, "members.json")) {
+            if (is == null) return;
+            List<MemberSeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (MemberSeedDto dto : list) {
+                if (memberRepository.findByLoginId(dto.loginId()).isEmpty()) {
+                    Member m = new Member();
+                    m.setLoginId(dto.loginId());
+                    m.setPassword(passwordEncoder.encode(dto.password()));
+                    m.setName(dto.name());
+                    m.setEmail(dto.email());
+                    m.setPhone(dto.phone());
+                    m.setDepartment(dto.department() != null ? dto.department() : Department.WAREHOUSE_OPERATOR);
+                    m.setRole(dto.role() != null ? dto.role() : MemberRole.ROLE_OPERATOR);
+                    m.setStatus(AccountStatus.ACTIVE);
+                    memberRepository.save(m);
+                    log.info("  ▷ 회원 생성: {} ({})", dto.loginId(), dto.role());
+                }
             }
         }
     }
@@ -266,34 +283,34 @@ public class DataInitializer implements CommandLineRunner {
     // 3. 창고 & 로케이션 초기화 (Warehouses & Locations)
     // ─────────────────────────────────────────────────────────────────
     private void initWarehouses(File seedDir) throws IOException {
-        File file = new File(seedDir, "warehouses.json");
-        if (!file.exists()) return;
+        try (InputStream is = getSeedInputStream(seedDir, "warehouses.json")) {
+            if (is == null) return;
+            List<WarehouseSeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (WarehouseSeedDto dto : list) {
+                Warehouse wh = warehouseRepository.findByCode(dto.code()).orElseGet(() -> {
+                    Warehouse w = new Warehouse();
+                    w.setCode(dto.code());
+                    w.setName(dto.name());
+                    w.setAddress(dto.address());
+                    w.setManager(dto.manager());
+                    w.setPhone(dto.phone());
+                    w.setDescription(dto.description());
+                    w.setStatus(WarehouseStatus.ACTIVE);
+                    log.info("  ▷ 창고 생성: {} ({})", dto.code(), dto.name());
+                    return warehouseRepository.save(w);
+                });
 
-        List<WarehouseSeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (WarehouseSeedDto dto : list) {
-            Warehouse wh = warehouseRepository.findByCode(dto.code()).orElseGet(() -> {
-                Warehouse w = new Warehouse();
-                w.setCode(dto.code());
-                w.setName(dto.name());
-                w.setAddress(dto.address());
-                w.setManager(dto.manager());
-                w.setPhone(dto.phone());
-                w.setDescription(dto.description());
-                w.setStatus(WarehouseStatus.ACTIVE);
-                log.info("  ▷ 창고 생성: {} ({})", dto.code(), dto.name());
-                return warehouseRepository.save(w);
-            });
-
-            if (dto.locations() != null) {
-                for (LocationSeedDto locDto : dto.locations()) {
-                    if (!locationRepository.existsByCode(locDto.code())) {
-                        Location loc = new Location();
-                        loc.setWarehouse(wh);
-                        loc.setCode(locDto.code());
-                        loc.setName(locDto.name());
-                        loc.setStatus(LocationStatus.ACTIVE);
-                        locationRepository.save(loc);
-                        log.info("    ↳ 로케이션 생성: {} ({})", locDto.code(), wh.getName());
+                if (dto.locations() != null) {
+                    for (LocationSeedDto locDto : dto.locations()) {
+                        if (!locationRepository.existsByCode(locDto.code())) {
+                            Location loc = new Location();
+                            loc.setWarehouse(wh);
+                            loc.setCode(locDto.code());
+                            loc.setName(locDto.name());
+                            loc.setStatus(LocationStatus.ACTIVE);
+                            locationRepository.save(loc);
+                            log.info("    ↳ 로케이션 생성: {} ({})", locDto.code(), wh.getName());
+                        }
                     }
                 }
             }
@@ -304,24 +321,24 @@ public class DataInitializer implements CommandLineRunner {
     // 4. 공급업체 초기화 (Suppliers)
     // ─────────────────────────────────────────────────────────────────
     private void initSuppliers(File seedDir) throws IOException {
-        File file = new File(seedDir, "suppliers.json");
-        if (!file.exists()) return;
-
-        List<SupplierSeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (SupplierSeedDto dto : list) {
-            supplierRepository.findByCode(dto.code()).orElseGet(() -> {
-                Supplier s = new Supplier();
-                s.setCode(dto.code());
-                s.setName(dto.name());
-                s.setBusinessNo(dto.businessNo());
-                s.setCeoName(dto.ceoName());
-                s.setPhone(dto.phone());
-                s.setEmail(dto.email());
-                s.setAddress(dto.address());
-                s.setStatus(SupplierStatus.ACTIVE);
-                log.info("  ▷ 공급업체 생성: {} ({})", dto.code(), dto.name());
-                return supplierRepository.save(s);
-            });
+        try (InputStream is = getSeedInputStream(seedDir, "suppliers.json")) {
+            if (is == null) return;
+            List<SupplierSeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (SupplierSeedDto dto : list) {
+                supplierRepository.findByCode(dto.code()).orElseGet(() -> {
+                    Supplier s = new Supplier();
+                    s.setCode(dto.code());
+                    s.setName(dto.name());
+                    s.setBusinessNo(dto.businessNo());
+                    s.setCeoName(dto.ceoName());
+                    s.setPhone(dto.phone());
+                    s.setEmail(dto.email());
+                    s.setAddress(dto.address());
+                    s.setStatus(SupplierStatus.ACTIVE);
+                    log.info("  ▷ 공급업체 생성: {} ({})", dto.code(), dto.name());
+                    return supplierRepository.save(s);
+                });
+            }
         }
     }
 
@@ -329,40 +346,40 @@ public class DataInitializer implements CommandLineRunner {
     // 5. 고객사 & 배송지 초기화 (Customers & DeliveryAddresses)
     // ─────────────────────────────────────────────────────────────────
     private void initCustomers(File seedDir) throws IOException {
-        File file = new File(seedDir, "customers.json");
-        if (!file.exists()) return;
+        try (InputStream is = getSeedInputStream(seedDir, "customers.json")) {
+            if (is == null) return;
+            List<CustomerSeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (CustomerSeedDto dto : list) {
+                Customer customer = customerRepository.findByCode(dto.code()).orElseGet(() -> {
+                    Customer c = new Customer();
+                    c.setCode(dto.code());
+                    c.setName(dto.name());
+                    c.setBusinessNo(dto.businessNo());
+                    c.setCeoName(dto.ceoName());
+                    c.setPhone(dto.phone());
+                    c.setEmail(dto.email());
+                    c.setStatus(CustomerStatus.ACTIVE);
+                    log.info("  ▷ 고객사 생성: {} ({})", dto.code(), dto.name());
+                    return customerRepository.save(c);
+                });
 
-        List<CustomerSeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (CustomerSeedDto dto : list) {
-            Customer customer = customerRepository.findByCode(dto.code()).orElseGet(() -> {
-                Customer c = new Customer();
-                c.setCode(dto.code());
-                c.setName(dto.name());
-                c.setBusinessNo(dto.businessNo());
-                c.setCeoName(dto.ceoName());
-                c.setPhone(dto.phone());
-                c.setEmail(dto.email());
-                c.setStatus(CustomerStatus.ACTIVE);
-                log.info("  ▷ 고객사 생성: {} ({})", dto.code(), dto.name());
-                return customerRepository.save(c);
-            });
-
-            if (dto.deliveryAddresses() != null) {
-                for (DeliveryAddressSeedDto daDto : dto.deliveryAddresses()) {
-                    boolean exists = deliveryAddressRepository.findByCustomerId(customer.getId()).stream()
-                            .anyMatch(a -> a.getName().equals(daDto.name()));
-                    if (!exists) {
-                        DeliveryAddress da = new DeliveryAddress();
-                        da.setCustomer(customer);
-                        da.setName(daDto.name());
-                        da.setReceiverName(daDto.receiverName());
-                        da.setReceiverPhone(daDto.receiverPhone());
-                        da.setZipCode(daDto.zipCode());
-                        da.setAddress(daDto.address());
-                        da.setDefaultAddress(daDto.defaultAddress() != null ? daDto.defaultAddress() : true);
-                        da.setStatus(DeliveryAddressStatus.ACTIVE);
-                        deliveryAddressRepository.save(da);
-                        log.info("    ↳ 배송지 생성: {} → {}", customer.getCode(), daDto.name());
+                if (dto.deliveryAddresses() != null) {
+                    for (DeliveryAddressSeedDto daDto : dto.deliveryAddresses()) {
+                        boolean exists = deliveryAddressRepository.findByCustomerId(customer.getId()).stream()
+                                .anyMatch(a -> a.getName().equals(daDto.name()));
+                        if (!exists) {
+                            DeliveryAddress da = new DeliveryAddress();
+                            da.setCustomer(customer);
+                            da.setName(daDto.name());
+                            da.setReceiverName(daDto.receiverName());
+                            da.setReceiverPhone(daDto.receiverPhone());
+                            da.setZipCode(daDto.zipCode());
+                            da.setAddress(daDto.address());
+                            da.setDefaultAddress(daDto.defaultAddress() != null ? daDto.defaultAddress() : true);
+                            da.setStatus(DeliveryAddressStatus.ACTIVE);
+                            deliveryAddressRepository.save(da);
+                            log.info("    ↳ 배송지 생성: {} → {}", customer.getCode(), daDto.name());
+                        }
                     }
                 }
             }
@@ -373,19 +390,19 @@ public class DataInitializer implements CommandLineRunner {
     // 6. 품목 카테고리 초기화 (Categories)
     // ─────────────────────────────────────────────────────────────────
     private void initCategories(File seedDir) throws IOException {
-        File file = new File(seedDir, "categories.json");
-        if (!file.exists()) return;
-
-        List<CategorySeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (CategorySeedDto dto : list) {
-            itemCategoryRepository.findByCode(dto.code()).orElseGet(() -> {
-                ItemCategory cat = new ItemCategory();
-                cat.setCode(dto.code());
-                cat.setName(dto.name());
-                cat.setDescription(dto.description());
-                log.info("  ▷ 카테고리 생성: {} ({})", dto.code(), dto.name());
-                return itemCategoryRepository.save(cat);
-            });
+        try (InputStream is = getSeedInputStream(seedDir, "categories.json")) {
+            if (is == null) return;
+            List<CategorySeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (CategorySeedDto dto : list) {
+                itemCategoryRepository.findByCode(dto.code()).orElseGet(() -> {
+                    ItemCategory cat = new ItemCategory();
+                    cat.setCode(dto.code());
+                    cat.setName(dto.name());
+                    cat.setDescription(dto.description());
+                    log.info("  ▷ 카테고리 생성: {} ({})", dto.code(), dto.name());
+                    return itemCategoryRepository.save(cat);
+                });
+            }
         }
     }
 
@@ -393,30 +410,30 @@ public class DataInitializer implements CommandLineRunner {
     // 7. 품목 초기화 (Items)
     // ─────────────────────────────────────────────────────────────────
     private void initItems(File seedDir) throws IOException {
-        File file = new File(seedDir, "items.json");
-        if (!file.exists()) return;
+        try (InputStream is = getSeedInputStream(seedDir, "items.json")) {
+            if (is == null) return;
+            List<ItemSeedDto> list = objectMapper.readValue(is, new TypeReference<>() {});
+            for (ItemSeedDto dto : list) {
+                itemRepository.findByCode(dto.code()).orElseGet(() -> {
+                    ItemCategory cat = dto.categoryCode() != null
+                            ? itemCategoryRepository.findByCode(dto.categoryCode()).orElse(null)
+                            : null;
+                    Supplier sup = dto.supplierCode() != null
+                            ? supplierRepository.findByCode(dto.supplierCode()).orElse(null)
+                            : null;
 
-        List<ItemSeedDto> list = objectMapper.readValue(file, new TypeReference<>() {});
-        for (ItemSeedDto dto : list) {
-            itemRepository.findByCode(dto.code()).orElseGet(() -> {
-                ItemCategory cat = dto.categoryCode() != null
-                        ? itemCategoryRepository.findByCode(dto.categoryCode()).orElse(null)
-                        : null;
-                Supplier sup = dto.supplierCode() != null
-                        ? supplierRepository.findByCode(dto.supplierCode()).orElse(null)
-                        : null;
-
-                Item item = new Item();
-                item.setCode(dto.code());
-                item.setName(dto.name());
-                item.setBarcode(dto.barcode());
-                item.setSpecification(dto.specification());
-                item.setUnit(dto.unit() != null ? dto.unit() : UnitType.EA);
-                item.setCategory(cat);
-                item.setSupplier(sup);
-                log.info("  ▷ 품목 생성: {} ({})", dto.code(), dto.name());
-                return itemRepository.save(item);
-            });
+                    Item item = new Item();
+                    item.setCode(dto.code());
+                    item.setName(dto.name());
+                    item.setBarcode(dto.barcode());
+                    item.setSpecification(dto.specification());
+                    item.setUnit(dto.unit() != null ? dto.unit() : UnitType.EA);
+                    item.setCategory(cat);
+                    item.setSupplier(sup);
+                    log.info("  ▷ 품목 생성: {} ({})", dto.code(), dto.name());
+                    return itemRepository.save(item);
+                });
+            }
         }
     }
 

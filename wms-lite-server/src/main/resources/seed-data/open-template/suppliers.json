@@ -1,0 +1,20 @@
+[
+  {
+    "code": "SUP-SAMPLE-01",
+    "name": "샘플 공급업체 A사",
+    "businessNo": "123-45-67890",
+    "ceoName": "김공급",
+    "phone": "02-1111-2222",
+    "email": "supplier_a@example.com",
+    "address": "서울특별시 구로구 디지털로 100"
+  },
+  {
+    "code": "SUP-SAMPLE-02",
+    "name": "샘플 공급업체 B사",
+    "businessNo": "987-65-43210",
+    "ceoName": "이납품",
+    "phone": "031-2222-3333",
+    "email": "supplier_b@example.com",
+    "address": "경기도 성남시 분당구 판교역로 200"
+  }
+]
