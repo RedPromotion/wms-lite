@@ -1,9 +1,11 @@
 # Local Agent & Tool Configs
 .agents/
 
-# Personal Drafts & Notes
+# Personal Drafts & Notes & Test Tools
 wms-lite-md/
 utils/
+tracked_files.txt
+wms-lite-test-web/
 
 # Environment & Secrets (비밀키 및 암호 보안 제외)
 .env
