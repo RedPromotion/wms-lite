@@ -414,18 +414,18 @@ erDiagram
 
 | 점검 항목 | 결과 | 비고 |
 | :--- | :--- | :--- |
-| 민감 정보 노출 점검 | PASS | 실제 `.env.prod`, 프론트 `.env.production`은 git ignore 대상이며, 추적 파일/작업트리에서 실 DB 비밀번호·JWT 시크릿 패턴 미검출 |
+| 민감 정보 노출 점검 | PASS | 실제 운영 비밀값은 git ignore 대상으로 관리하며, 추적 파일/작업트리에서 실 DB 비밀번호·토큰 서명키 패턴 미검출 |
 | Backend 테스트 | PASS | `./gradlew.bat test` 성공 |
 | Frontend 빌드 | PASS | `wms-lite-user-web`, `wms-lite-admin-web`, `wms-lite-test-web` 빌드 성공 |
 | Frontend 린트 | PASS | admin/test는 오류 없음, user-web은 오류 0개 및 경고 10개 |
 | 의존성 취약점 | PASS | 3개 프론트 프로젝트 `npm audit --omit=dev` 기준 0 vulnerabilities |
-| 운영 설정 | PASS | Railway/Neon용 `prod` 설정, CORS 환경변수화, JWT 로컬 기본값 보정, `.env.prod.example` 제공 |
+| 운영 설정 | PASS | 운영용 설정값은 환경변수 기반으로 분리하고, 공개 저장소에는 실제 비밀값을 포함하지 않도록 정리 |
 
 운영 공개 전 최종 확인 사항:
 
-- Neon DB 비밀번호와 `JWT_SECRET`은 공개 전 한 번 회전한 뒤 Railway 환경변수에만 저장합니다.
-- 최초 Railway 배포는 `JPA_DDL_AUTO=update`로 스키마를 생성하고, 데이터/스키마가 안정화되면 `validate`로 전환합니다.
-- GitHub Pages 또는 프론트 배포 도메인이 정해지면 해당 Origin을 `CORS_ALLOWED_ORIGINS`에 추가합니다.
+- 운영 DB 비밀번호와 토큰 서명키는 공개 전 한 번 회전한 뒤 배포 플랫폼의 비공개 환경변수로만 관리합니다.
+- 최초 배포 후 스키마와 데이터가 안정화되면 운영 설정을 보수적으로 전환합니다.
+- GitHub Pages 또는 프론트 배포 도메인이 정해지면 백엔드 CORS 허용 Origin에 반영합니다.
 
 ---
 
@@ -443,9 +443,7 @@ wms-lite (Root Monorepo)
 │       │   │   ├── 📂 board            # 현장 공지 및 자유게시판
 │       │   │   └── 📂 user             # 사용자(Member) 및 관리자(Admin) 인증/관리
 │       │   └── 📂 global               # Security, JWT, Error Handling, Base Entity
-│       ├── 📂 src/test/java            # 도메인 단위/통합 테스트 코드
-│       ├── 📄 .env.prod.example        # 운영(prod) 프로파일 환경변수 템플릿
-│       └── 📄 railway.toml             # Railway 자동 빌드 & 헬스체크 배포 설정 파일
+│       └── 📂 src/test/java            # 도메인 단위/통합 테스트 코드
 │
 ├── 📂 wms-lite-user-web (현장 실무자 전용 Web)
 │   └── src
@@ -457,8 +455,7 @@ wms-lite (Root Monorepo)
 │   └── src                            # 마스터 기준정보 설정, 계정 및 권한 관리 화면
 │
 ├── 📂 wms-lite-test-web (API 통합 검증 Web)
-├── 📂 docs                            # 시스템 아키텍처 및 상세 ERD/API 명세서
-└── 📂 utils                           # 원클릭 통합/개별 실행 배치 스크립트
+└── 📂 docs                            # 시스템 아키텍처 및 상세 ERD/API 명세서
 ```
 
 ---
@@ -472,7 +469,7 @@ wms-lite (Root Monorepo)
 
 ---
 
-### 1) 수동 빌드 및 로컬 실행
+### 로컬 실행
 
 #### 백엔드 (`wms-lite/wms-lite`)
 ```bash
@@ -489,37 +486,6 @@ npm install
 npm run dev
 ```
 * **웹 애플리케이션 접속**: `http://localhost:5173`
-
----
-
-### 2) 클라우드 배포 가이드 (Railway + Neon.tech)
-
-운영 프로파일(`SPRING_PROFILES_ACTIVE=prod`) 적용 시 **Railway** 환경변수에 다음 값들을 설정합니다:
-
-| 환경변수 Key | 설정 내용 예시 |
-| :--- | :--- |
-| `SPRING_PROFILES_ACTIVE` | `prod` |
-| `DB_URL` | `jdbc:postgresql://<neon-host>/<dbname>?sslmode=require` |
-| `DB_USERNAME` | `neondb_owner` |
-| `DB_PASSWORD` | `<neon-password>` |
-| `JPA_DDL_AUTO` | `update` (초기 배포) / `validate` (스키마 안정화 후) |
-| `JWT_SECRET` | 32자 이상의 무작위 임의 시크릿 문자열 |
-| `CORS_ALLOWED_ORIGINS` | `https://your-frontend-domain.com` |
-
-배포 후에는 Swagger UI 또는 `wms-lite-test-web`에서 로그인, 기준정보 생성, 입고 완료, 출고 요청/완료, 재고 이동까지 한 번의 업무 흐름으로 검증하는 것을 권장합니다.
-
----
-
-### 3) 원클릭 배치 스크립트 실행 (`/utils`)
-Windows 환경에서는 `utils` 디렉토리에 제공되는 배치 스크립트를 통해 구동할 수 있습니다.
-
-```bash
-# 전체 시스템 구동 (백엔드 + 실무 웹 + 관리자 웹 동시 실행)
-utils/run-all.bat
-
-# 백엔드 서버만 단독 실행
-utils/run-server.bat
-```
 
 ---
 
