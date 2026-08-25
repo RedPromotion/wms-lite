@@ -18,7 +18,16 @@ public class CorsConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        config.setAllowedOrigins(allowedOrigins);
+        // 깃허브 페이지 및 로컬/클라우드 요청을 모두 허용
+        config.setAllowedOriginPatterns(List.of(
+                "https://*.github.io",
+                "https://redpromotion.github.io",
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "https://*.railway.app",
+                "https://*.up.railway.app",
+                "*"));
+
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setExposedHeaders(List.of("Authorization", "Content-Disposition"));
