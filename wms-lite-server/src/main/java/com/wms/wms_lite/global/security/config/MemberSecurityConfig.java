@@ -50,7 +50,7 @@ public class MemberSecurityConfig {
                                                 .requestMatchers("/actuator/health", "/h2-console/**",
                                                                 "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
                                                 .permitAll()
-                                                .requestMatchers("/api/members/login", "/api/members/reissue")
+                                                .requestMatchers("/api/members/login", "/api/members/reissue", "/api/public/**")
                                                 .permitAll()
                                                 .anyRequest().authenticated())
                                 .addFilterBefore(new org.springframework.web.filter.CorsFilter(corsConfigurationSource),
