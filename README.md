@@ -58,7 +58,7 @@ flowchart TD
         TestWeb["🧪 wms-lite-test-web\n(API 검증 & 모놀리식 테스트 웹)"]
     end
 
-    subgraph Backend ["Backend Core (wms-lite/wms-lite)"]
+    subgraph Backend ["Backend Core (wms-lite-server)"]
         Gateway["REST API Controller Layer\n(Swagger / Global Exception / JWT Filter)"]
         Service["Domain Business Service Layer\n(Inbound / Outbound / Inventory / Movement)"]
         EventBus["Spring Event Publisher\n(InventoryChangedEvent)"]
@@ -86,7 +86,7 @@ flowchart TD
 
 | 모듈명 | 기술 스택 | 주 사용자 | 주요 기능 및 역할 |
 | :--- | :--- | :--- | :--- |
-| **`wms-lite/wms-lite`** | Java 21, Spring Boot 4.1, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
+| **`wms-lite-server`** | Java 21, Spring Boot 4.1, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
 | **`wms-lite-user-web`** | React 19, TypeScript 6, Vite 8 | 현장 작업자 / 현장 관리자 | 입고 적치(Putaway), 출고 피킹(Picking), 로케이션 이동, 실시간 재고 조회 |
 | **`wms-lite-admin-web`** | React 19, TypeScript 6, Vite 8 | 플랫폼 / 시스템 관리자 | 마스터 기준정보(창고/로케이션/품목/거래처) 관리, 계정/권한 통제, 전체 모니터링 |
 | **`wms-lite-test-web`** | React 19, TypeScript 6, Vite 8 | 개발자 / QA | 신속한 API 기능 검증 및 시나리오 테스트용 단일 페이지 |
@@ -433,17 +433,16 @@ erDiagram
 
 ```text
 wms-lite (Root Monorepo)
-├── 📂 wms-lite (Backend API Server Core)
-│   └── wms-lite
-│       ├── 📂 src/main/java/com/wms/wms_lite
-│       │   ├── 📂 domain
-│       │   │   ├── 📂 master           # 고객사, 공급사, 품목, 창고/로케이션 마스터
-│       │   │   ├── 📂 transaction      # 입고, 출고, 재고, 재고이동, 재고이력
-│       │   │   ├── 📂 dashboard        # 관제 통계 및 현황 집계
-│       │   │   ├── 📂 board            # 현장 공지 및 자유게시판
-│       │   │   └── 📂 user             # 사용자(Member) 및 관리자(Admin) 인증/관리
-│       │   └── 📂 global               # Security, JWT, Error Handling, Base Entity
-│       └── 📂 src/test/java            # 도메인 단위/통합 테스트 코드
+├── 📂 wms-lite-server (Backend API Server Core)
+│   ├── 📂 src/main/java/com/wms/wms_lite
+│   │   ├── 📂 domain
+│   │   │   ├── 📂 master           # 고객사, 공급사, 품목, 창고/로케이션 마스터
+│   │   │   ├── 📂 transaction      # 입고, 출고, 재고, 재고이동, 재고이력
+│   │   │   ├── 📂 dashboard        # 관제 통계 및 현황 집계
+│   │   │   ├── 📂 board            # 현장 공지 및 자유게시판
+│   │   │   └── 📂 user             # 사용자(Member) 및 관리자(Admin) 인증/관리
+│   │   └── 📂 global               # Security, JWT, Error Handling, Base Entity
+│   └── 📂 src/test/java            # 도메인 단위/통합 테스트 코드
 │
 ├── 📂 wms-lite-user-web (현장 실무자 전용 Web)
 │   └── src
@@ -471,9 +470,9 @@ wms-lite (Root Monorepo)
 
 ### 로컬 실행
 
-#### 백엔드 (`wms-lite/wms-lite`)
+#### 백엔드 (`wms-lite-server`)
 ```bash
-cd wms-lite/wms-lite
+cd wms-lite-server
 ./gradlew bootRun
 ```
 * **Swagger UI (API 명세서)**: `http://localhost:8080/swagger-ui/index.html`
