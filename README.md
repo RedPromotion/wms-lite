@@ -3,7 +3,7 @@
 <div align="center">
 
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
-![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.x_/_4.x-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
 ![Spring Security](https://img.shields.io/badge/Spring_Security-JWT-6DB33F?style=for-the-badge&logo=springsecurity&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)
@@ -26,8 +26,9 @@
 4. [핵심 기술적 챌린지 및 해결 전략 (Engineering Highlights)](#-4-핵심-기술적-챌린지-및-해결-전략-engineering-highlights)
 5. [데이터베이스 모델링 (Database & ERD)](#-5-데이터베이스-모델링-database--erd)
 6. [기술 스택 (Tech Stack)](#-6-기술-스택-tech-stack)
-7. [프로젝트 구조 (Directory Structure)](#-7-프로젝트-구조-directory-structure)
-8. [실행 및 환경 설정 가이드 (Getting Started)](#-8-실행-및-환경-설정-가이드-getting-started)
+7. [검증 및 공개 준비 상태 (Quality Gate)](#-7-검증-및-공개-준비-상태-quality-gate)
+8. [프로젝트 구조 (Directory Structure)](#-8-프로젝트-구조-directory-structure)
+9. [실행 및 환경 설정 가이드 (Getting Started)](#-9-실행-및-환경-설정-가이드-getting-started)
 
 ---
 
@@ -57,11 +58,11 @@ flowchart TD
         TestWeb["🧪 wms-lite-test-web\n(API 검증 & 모놀리식 테스트 웹)"]
     end
 
-    subgraph Backend ["Backend Core (wms-lite-server)"]
+    subgraph Backend ["Backend Core (wms-lite/wms-lite)"]
         Gateway["REST API Controller Layer\n(Swagger / Global Exception / JWT Filter)"]
         Service["Domain Business Service Layer\n(Inbound / Outbound / Inventory / Movement)"]
         EventBus["Spring Event Publisher\n(InventoryChangedEvent)"]
-        EventListener["Event Listener (AFTER_COMMIT)\n(Stock History Async Logging)"]
+        EventListener["Event Listener (AFTER_COMMIT)\n(Stock History Audit Log)"]
         DataLayer["Persistence Layer (Spring Data JPA / Hibernate)"]
     end
 
@@ -85,10 +86,10 @@ flowchart TD
 
 | 모듈명 | 기술 스택 | 주 사용자 | 주요 기능 및 역할 |
 | :--- | :--- | :--- | :--- |
-| **`wms-lite/wms-lite`** | Java 21, Spring Boot 3.x, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
+| **`wms-lite/wms-lite`** | Java 21, Spring Boot 4.1, JPA, Security, JWT | Backend | 핵심 비즈니스 로직, 동시성 제어, 트랜잭션 관리, RESTful API 제공 |
 | **`wms-lite-user-web`** | React 19, TypeScript 6, Vite 8 | 현장 작업자 / 현장 관리자 | 입고 적치(Putaway), 출고 피킹(Picking), 로케이션 이동, 실시간 재고 조회 |
 | **`wms-lite-admin-web`** | React 19, TypeScript 6, Vite 8 | 플랫폼 / 시스템 관리자 | 마스터 기준정보(창고/로케이션/품목/거래처) 관리, 계정/권한 통제, 전체 모니터링 |
-| **`wms-lite-test-web`** | React, Web | 개발자 / QA | 신속한 API 기능 검증 및 시나리오 테스트용 단일 페이지 |
+| **`wms-lite-test-web`** | React 19, TypeScript 6, Vite 8 | 개발자 / QA | 신속한 API 기능 검증 및 시나리오 테스트용 단일 페이지 |
 
 ---
 
@@ -120,7 +121,7 @@ stateDiagram-v2
    - `Item`: 품목 카테고리, 바코드, 단위(UOM), 보관 조건 관리
 2. **입고 관리 (Inbound)**
    - 고유 채번 규칙(`IB-yyyyMMdd-XXXXX`)에 따른 입고 전표 자동 생성
-   - 입고 상태 머신: `REQUESTED(요청)` ➔ `IN_PROGRESS(진행)` ➔ `COMPLETED(완료/적치)` ➔ `CANCELLED(취소)`
+   - 입고 상태 머신: `REQUESTED(요청)` ➔ `COMPLETED(완료/적치)` / `CANCELED(취소)`
 3. **출고 관리 (Outbound)**
    - 출고 요청 시 **가용 재고 사전 검증** 및 즉각적인 **예약 수량 선점**
    - 피킹 및 패킹 단계를 거쳐 출고 완료 시 실재고와 예약 수량 일괄 차감
@@ -140,23 +141,24 @@ stateDiagram-v2
 ```java
 @Entity
 @Table(name = "inventories", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"warehouse_id", "location_id", "item_id"})
+    @UniqueConstraint(columnNames = {"location_id", "item_id"})
 })
 public class Inventory extends AuditableEntity {
-    ...
     @Version
     private Long version; // 동시성 제어를 위한 버전 관리
 
-    public void deductQuantity(int qty) {
-        validateAvailableQuantity(qty);
-        this.quantity -= qty;
+    public void reserve(int amount) {
+        if (getAvailableQuantity() < amount) {
+            throw new InventoryException(InventoryErrorCode.INVENTORY_RESERVE_EXCEEDED);
+        }
+        this.reservedQuantity += amount;
     }
 }
 ```
 
 ---
 
-### ② Spring Event 기반 트랜잭션 분리 및 재고 이력(Audit Log) 비동기 격리
+### ② Spring Event 기반 트랜잭션 분리 및 재고 이력(Audit Log) 격리
 - **문제 상황**: 재고 변경 로직과 이력(`StockHistory`) 기록 로직이 단일 트랜잭션에 묶일 경우, 이력 로깅 실패로 인해 메인 비즈니스(입출고)가 롤백되거나 성능 저하 발생
 - **해결 전략**: 메인 도메인에서는 `InventoryChangedEvent`만 발행하고, 이력 저장은 `@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)`로 분리하여 메인 트랜잭션 커밋 완료 후 독립 트랜잭션(`REQUIRES_NEW`)으로 영속화
 
@@ -205,19 +207,72 @@ sequenceDiagram
 ```mermaid
 erDiagram
     WAREHOUSE ||--o{ LOCATION : contains
-    ITEM ||--o{ INVENTORY : stocked_in
     LOCATION ||--o{ INVENTORY : stores
+    ITEM_CATEGORY ||--o{ ITEM : classifies
+    SUPPLIER ||--o{ ITEM : supplies
+    ITEM ||--o{ INVENTORY : stocked_as
+
+    SUPPLIER ||--o{ INBOUND : receives_from
+    INBOUND ||--o{ INBOUND_ITEM : contains
+    ITEM ||--o{ INBOUND_ITEM : received_item
+    LOCATION ||--o{ INBOUND_ITEM : putaway_location
+
     CUSTOMER ||--o{ DELIVERY_ADDRESS : has
-    SUPPLIER ||--o{ INBOUND : supplies
     CUSTOMER ||--o{ OUTBOUND : orders
+    DELIVERY_ADDRESS ||--o{ OUTBOUND : ships_to
+    OUTBOUND ||--o{ OUTBOUND_ITEM : contains
+    ITEM ||--o{ OUTBOUND_ITEM : shipped_item
+    LOCATION ||--o{ OUTBOUND_ITEM : picking_location
+
+    STOCK_MOVEMENT ||--o{ STOCK_MOVEMENT_ITEM : contains
+    ITEM ||--o{ STOCK_MOVEMENT_ITEM : moved_item
+    LOCATION ||--o{ STOCK_MOVEMENT_ITEM : from_location
+    LOCATION ||--o{ STOCK_MOVEMENT_ITEM : to_location
+
+    ITEM ||--o{ STOCK_HISTORY : logs
+    LOCATION ||--o{ STOCK_HISTORY : logs
     
-    INBOUND ||--o{ INBOUND_ITEM : details
-    OUTBOUND ||--o{ OUTBOUND_ITEM : details
-    INVENTORY ||--o{ STOCK_HISTORY : logs
-    
-    INVENTORY {
+    WAREHOUSE {
+        Long id PK
+        String code UK
+        String name
+        String status
+    }
+
+    LOCATION {
         Long id PK
         Long warehouse_id FK
+        String code
+        String name
+        String status
+    }
+
+    ITEM_CATEGORY {
+        Long id PK
+        String code UK
+        String name
+    }
+
+    SUPPLIER {
+        Long id PK
+        String code UK
+        String name
+        String status
+    }
+
+    ITEM {
+        Long id PK
+        Long category_id FK
+        Long supplier_id FK
+        String code UK
+        String name
+        String barcode
+        int safety_stock_quantity
+        String status
+    }
+
+    INVENTORY {
+        Long id PK
         Long location_id FK
         Long item_id FK
         int quantity "실재고"
@@ -225,10 +280,73 @@ erDiagram
         Long version "낙관적 락 버전"
     }
 
+    CUSTOMER {
+        Long id PK
+        String code UK
+        String name
+        String status
+    }
+
+    DELIVERY_ADDRESS {
+        Long id PK
+        Long customer_id FK
+        String address
+        boolean default_address
+    }
+
+    INBOUND {
+        Long id PK
+        Long supplier_id FK
+        String inbound_no UK
+        String status
+        LocalDate expected_date
+    }
+
+    INBOUND_ITEM {
+        Long id PK
+        Long inbound_id FK
+        Long item_id FK
+        Long location_id FK
+        int quantity
+    }
+
+    OUTBOUND {
+        Long id PK
+        Long customer_id FK
+        Long delivery_address_id FK
+        String outbound_no UK
+        String status
+    }
+
+    OUTBOUND_ITEM {
+        Long id PK
+        Long outbound_id FK
+        Long item_id FK
+        Long location_id FK
+        int quantity
+    }
+
+    STOCK_MOVEMENT {
+        Long id PK
+        String movement_no UK
+        String status
+        LocalDateTime completed_at
+    }
+
+    STOCK_MOVEMENT_ITEM {
+        Long id PK
+        Long stock_movement_id FK
+        Long item_id FK
+        Long from_location_id FK
+        Long to_location_id FK
+        int quantity
+    }
+
     STOCK_HISTORY {
         Long id PK
-        Long inventory_id FK
-        String transaction_type "INBOUND / OUTBOUND / MOVE / ADJUST"
+        Long item_id FK
+        Long location_id FK
+        String history_type "INBOUND / OUTBOUND / MOVE / ADJUST"
         int change_quantity
         int before_quantity
         int after_quantity
@@ -243,17 +361,43 @@ erDiagram
         int failed_login_attempts
         String role "ROLE_WORKER / ROLE_MANAGER"
     }
+
+    ADMIN {
+        Long id PK
+        String username UK
+        String status "ACTIVE / LOCKED / INACTIVE"
+        String role "ROLE_ADMIN / ROLE_SUPER_ADMIN"
+    }
+
+    LOGIN_HISTORY {
+        Long id PK
+        String login_id
+        String ip_address
+        String status "SUCCESS / FAILED / LOGOUT"
+        LocalDateTime login_at
+    }
 ```
+
+---
+
+### 주요 API Surface
+
+| 영역 | 대표 경로 | 설명 |
+| :--- | :--- | :--- |
+| 인증/사용자 | `/api/members`, `/api/admin/admins`, `/api/admin/members` | 현장 계정, 관리자 계정, 토큰 재발급/로그아웃 |
+| 기준 정보 | `/api/warehouses`, `/api/warehouses/{warehouseId}/locations`, `/api/items`, `/api/item-categories`, `/api/suppliers`, `/api/customers` | 창고, 로케이션, 품목, 거래처 마스터 |
+| 입출고/재고 | `/api/inbounds`, `/api/outbounds`, `/api/inventories`, `/api/movements`, `/api/stock-histories` | 입고, 출고, 재고 조회, 이동, 이력 조회 |
+| 운영 화면 | `/api/dashboard/summary`, `/api/notices`, `/api/posts` | 대시보드 요약, 공지, 자유게시판 |
 
 ---
 
 ## 🛠️ 6. 기술 스택 (Tech Stack)
 
 ### Backend
-- **Core**: Java 21, Spring Boot 3.x / 4.x
+- **Core**: Java 21, Spring Boot 4.1
 - **ORM / Persistence**: Spring Data JPA, Hibernate, MapStruct 1.6.3
 - **Security**: Spring Security, JJWT (io.jsonwebtoken 0.12.6)
-- **Database & Cloud**: Neon.tech (Cloud Serverless PostgreSQL), H2 (In-Memory / File), MSSQL
+- **Database & Cloud**: Neon.tech (Cloud Serverless PostgreSQL), H2 File, MSSQL
 - **Cloud Hosting & Deployment**: Railway (PaaS - Nixpacks Builder)
 - **Docs & Testing**: SpringDoc OpenAPI 2.8.5 (Swagger UI), JUnit 5, Mockito
 - **Build Tool**: Gradle 8.14 (Kotlin DSL)
@@ -266,7 +410,26 @@ erDiagram
 
 ---
 
-## 📁 7. 프로젝트 구조 (Directory Structure)
+## ✅ 7. 검증 및 공개 준비 상태 (Quality Gate)
+
+| 점검 항목 | 결과 | 비고 |
+| :--- | :--- | :--- |
+| 민감 정보 노출 점검 | PASS | 실제 `.env.prod`, 프론트 `.env.production`은 git ignore 대상이며, 추적 파일/작업트리에서 실 DB 비밀번호·JWT 시크릿 패턴 미검출 |
+| Backend 테스트 | PASS | `./gradlew.bat test` 성공 |
+| Frontend 빌드 | PASS | `wms-lite-user-web`, `wms-lite-admin-web`, `wms-lite-test-web` 빌드 성공 |
+| Frontend 린트 | PASS | admin/test는 오류 없음, user-web은 오류 0개 및 경고 10개 |
+| 의존성 취약점 | PASS | 3개 프론트 프로젝트 `npm audit --omit=dev` 기준 0 vulnerabilities |
+| 운영 설정 | PASS | Railway/Neon용 `prod` 설정, CORS 환경변수화, JWT 로컬 기본값 보정, `.env.prod.example` 제공 |
+
+운영 공개 전 최종 확인 사항:
+
+- Neon DB 비밀번호와 `JWT_SECRET`은 공개 전 한 번 회전한 뒤 Railway 환경변수에만 저장합니다.
+- 최초 Railway 배포는 `JPA_DDL_AUTO=update`로 스키마를 생성하고, 데이터/스키마가 안정화되면 `validate`로 전환합니다.
+- GitHub Pages 또는 프론트 배포 도메인이 정해지면 해당 Origin을 `CORS_ALLOWED_ORIGINS`에 추가합니다.
+
+---
+
+## 📁 8. 프로젝트 구조 (Directory Structure)
 
 ```text
 wms-lite (Root Monorepo)
@@ -300,11 +463,11 @@ wms-lite (Root Monorepo)
 
 ---
 
-## 🚀 8. 실행 및 환경 설정 가이드 (Getting Started)
+## 🚀 9. 실행 및 환경 설정 가이드 (Getting Started)
 
 ### 요구 사양 (Prerequisites)
 - **Java**: JDK 21 이상
-- **Node.js**: v18.x 이상 및 npm
+- **Node.js**: v20.x 이상 및 npm
 - **Database**: H2 (개발 기본 내장) / 운영 DB (Neon.tech PostgreSQL)
 
 ---
@@ -342,6 +505,8 @@ npm run dev
 | `JPA_DDL_AUTO` | `update` (초기 배포) / `validate` (스키마 안정화 후) |
 | `JWT_SECRET` | 32자 이상의 무작위 임의 시크릿 문자열 |
 | `CORS_ALLOWED_ORIGINS` | `https://your-frontend-domain.com` |
+
+배포 후에는 Swagger UI 또는 `wms-lite-test-web`에서 로그인, 기준정보 생성, 입고 완료, 출고 요청/완료, 재고 이동까지 한 번의 업무 흐름으로 검증하는 것을 권장합니다.
 
 ---
 
