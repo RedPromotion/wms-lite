@@ -25,28 +25,32 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Order(1)
 public class AdminSecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final CorsConfigurationSource corsConfigurationSource;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+        private final CustomAccessDeniedHandler accessDeniedHandler;
+        private final CorsConfigurationSource corsConfigurationSource;
 
-    @Bean
-    public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .securityMatcher("/api/admin/**")
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(csrf -> csrf.disable())
-                .formLogin(form -> form.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(eh -> eh
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/admin/admins/login", "/api/admin/admins/reissue").permitAll()
-                        .anyRequest().hasAnyRole("ADMIN_SUPER", "ADMIN_DEV", "ADMIN_OPS"))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+        @Bean
+        public SecurityFilterChain adminFilterChain(HttpSecurity http) throws Exception {
+                return http
+                                .securityMatcher("/api/admin/**")
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                                .csrf(csrf -> csrf.disable())
+                                .formLogin(form -> form.disable())
+                                .httpBasic(httpBasic -> httpBasic.disable())
+                                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .exceptionHandling(eh -> eh
+                                                .authenticationEntryPoint(authenticationEntryPoint)
+                                                .accessDeniedHandler(accessDeniedHandler))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
+                                                .permitAll()
+                                                .requestMatchers("/api/admin/admins/login", "/api/admin/admins/reissue")
+                                                .permitAll()
+                                                .anyRequest().hasAnyRole("ADMIN_SUPER", "ADMIN_DEV", "ADMIN_OPS"))
+                                .addFilterBefore(new org.springframework.web.filter.CorsFilter(corsConfigurationSource),
+                                                UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .build();
+        }
 }

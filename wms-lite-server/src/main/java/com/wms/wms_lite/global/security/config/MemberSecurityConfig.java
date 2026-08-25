@@ -27,29 +27,35 @@ import org.springframework.web.cors.CorsConfigurationSource;
 @Order(2)
 public class MemberSecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
-    private final CustomAccessDeniedHandler accessDeniedHandler;
-    private final CorsConfigurationSource corsConfigurationSource;
+        private final JwtAuthenticationFilter jwtAuthenticationFilter;
+        private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+        private final CustomAccessDeniedHandler accessDeniedHandler;
+        private final CorsConfigurationSource corsConfigurationSource;
 
-    @Bean
-    public SecurityFilterChain memberFilterChain(HttpSecurity http) throws Exception {
-        return http
-                .securityMatcher("/api/members/**", "/api/**")
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(csrf -> csrf.disable())
-                .formLogin(form -> form.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(eh -> eh
-                        .authenticationEntryPoint(authenticationEntryPoint)
-                        .accessDeniedHandler(accessDeniedHandler))
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() // Preflight 요청 전면 허용
-                        .requestMatchers("/actuator/health", "/h2-console/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                        .requestMatchers("/api/members/login", "/api/members/reissue").permitAll()
-                        .anyRequest().authenticated())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-    }
+        @Bean
+        public SecurityFilterChain memberFilterChain(HttpSecurity http) throws Exception {
+                return http
+                                .securityMatcher("/api/members/**", "/api/**")
+                                .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                                .csrf(csrf -> csrf.disable())
+                                .formLogin(form -> form.disable())
+                                .httpBasic(httpBasic -> httpBasic.disable())
+                                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .exceptionHandling(eh -> eh
+                                                .authenticationEntryPoint(authenticationEntryPoint)
+                                                .accessDeniedHandler(accessDeniedHandler))
+                                .authorizeHttpRequests(auth -> auth
+                                                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**")
+                                                .permitAll() // Preflight 요청 전면 허용
+                                                .requestMatchers("/actuator/health", "/h2-console/**",
+                                                                "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html")
+                                                .permitAll()
+                                                .requestMatchers("/api/members/login", "/api/members/reissue")
+                                                .permitAll()
+                                                .anyRequest().authenticated())
+                                .addFilterBefore(new org.springframework.web.filter.CorsFilter(corsConfigurationSource),
+                                                UsernamePasswordAuthenticationFilter.class)
+                                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                                .build();
+        }
 }
