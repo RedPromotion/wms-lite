@@ -27,6 +27,9 @@ import com.wms.wms_lite.domain.user.admin.entity.Admin;
 import com.wms.wms_lite.domain.user.admin.enums.AdminRole;
 import com.wms.wms_lite.domain.user.admin.repository.AdminRepository;
 import com.wms.wms_lite.domain.user.enums.AccountStatus;
+import com.wms.wms_lite.domain.transaction.stockhistory.entity.StockHistory;
+import com.wms.wms_lite.domain.transaction.stockhistory.enums.HistoryType;
+import com.wms.wms_lite.domain.transaction.stockhistory.repository.StockHistoryRepository;
 import com.wms.wms_lite.domain.user.member.entity.Member;
 import com.wms.wms_lite.domain.user.member.enums.Department;
 import com.wms.wms_lite.domain.user.member.enums.MemberRole;
@@ -66,7 +69,7 @@ public class DataInitializer implements CommandLineRunner {
     private final DeliveryAddressRepository deliveryAddressRepository;
     private final ItemCategoryRepository itemCategoryRepository;
     private final ItemRepository itemRepository;
-    private final com.wms.wms_lite.domain.transaction.stockhistory.repository.StockHistoryRepository stockHistoryRepository;
+    private final StockHistoryRepository stockHistoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final ObjectMapper objectMapper = new ObjectMapper()
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
@@ -421,19 +424,19 @@ public class DataInitializer implements CommandLineRunner {
     // 8. 수불 이력 마이그레이션 및 샘플 생성 (StockHistories)
     // ─────────────────────────────────────────────────────────────────
     private void initStockHistories() {
-        var histories = stockHistoryRepository.findAll();
+        List<StockHistory> histories = stockHistoryRepository.findAll();
 
-        for (var h : histories) {
+        for (StockHistory h : histories) {
             if (h.getSourceLocation() == null || h.getTargetLocation() == null || h.getPartnerName() == null) {
-                if (h.getHistoryType() == com.wms.wms_lite.domain.transaction.stockhistory.enums.HistoryType.INBOUND) {
+                if (h.getHistoryType() == HistoryType.INBOUND) {
                     if (h.getSourceLocation() == null) h.setSourceLocation("공급업체 메인 공급처");
                     if (h.getTargetLocation() == null) h.setTargetLocation("메인 중앙 물류창고 [" + (h.getLocation() != null ? h.getLocation().getCode() : "LOC-A-101") + "]");
                     if (h.getPartnerName() == null) h.setPartnerName("메인 공급업체");
-                } else if (h.getHistoryType() == com.wms.wms_lite.domain.transaction.stockhistory.enums.HistoryType.OUTBOUND) {
+                } else if (h.getHistoryType() == HistoryType.OUTBOUND) {
                     if (h.getSourceLocation() == null) h.setSourceLocation("메인 중앙 물류창고 [" + (h.getLocation() != null ? h.getLocation().getCode() : "LOC-A-102") + "]");
                     if (h.getTargetLocation() == null) h.setTargetLocation("고객사 메인 풀필먼트센터");
                     if (h.getPartnerName() == null) h.setPartnerName("메인 고객사");
-                } else if (h.getHistoryType() == com.wms.wms_lite.domain.transaction.stockhistory.enums.HistoryType.MOVEMENT_IN || h.getHistoryType() == com.wms.wms_lite.domain.transaction.stockhistory.enums.HistoryType.MOVEMENT_OUT) {
+                } else if (h.getHistoryType() == HistoryType.MOVEMENT_IN || h.getHistoryType() == HistoryType.MOVEMENT_OUT) {
                     if (h.getSourceLocation() == null) h.setSourceLocation("메인 중앙 물류창고 [" + (h.getLocation() != null ? h.getLocation().getCode() : "LOC-A-101") + "]");
                     if (h.getTargetLocation() == null) h.setTargetLocation("메인 중앙 물류창고 [LOC-B-201]");
                 } else {
