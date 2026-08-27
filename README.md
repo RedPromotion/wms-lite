@@ -25,7 +25,7 @@
 > | 권한 (Role) | 아이디 (ID) | 비밀번호 (Password) | 주요 체험 기능 |
 > | :--- | :--- | :--- | :--- |
 > | **현장 관리자** | `sample_supervisor` | `SamplePassword123!` | 입출고 승인/관리, 재고 이동 관제, 전체 현황 조회 |
-> | **현장 작업자** | `sample_operator` | `SamplePassword123!` | 입고 적치(Putaway), 출고 피킹(Picking) |
+> | **현장 작업자** | `sample_worker` | `SamplePassword123!` | 입고 적치(Putaway), 출고 피킹(Picking) |
 
 ---
 

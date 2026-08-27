@@ -141,6 +141,17 @@ export const MyPage: React.FC = () => {
       return;
     }
 
+    // 공개 데모 계정 (sample_*) 비밀번호 실시간 변경 보호 조치
+    if (user?.loginId?.startsWith('sample_')) {
+      toast.error('공개 데모 계정(sample_*)은 다른 사용자의 접속을 위해 비밀번호 변경이 제한되어 있습니다.', {
+        duration: 4000,
+      });
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      return;
+    }
+
     setChangingPassword(true);
     setTimeout(() => {
       toast.success('비밀번호가 성공적으로 변경되었습니다. 다음 로그인부터 적용됩니다.');
@@ -456,6 +467,24 @@ export const MyPage: React.FC = () => {
           </h3>
 
           <div style={{ maxWidth: '600px', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            {/* 데모 환경 안내 알림 박스 */}
+            <div style={{
+              padding: '0.75rem 1rem',
+              backgroundColor: 'rgba(234, 179, 8, 0.1)',
+              border: '1px solid rgba(234, 179, 8, 0.3)',
+              borderRadius: '6px',
+              color: '#facc15',
+              fontSize: '0.82rem',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+            }}>
+              <AlertCircle size={16} style={{ flexShrink: 0 }} />
+              <span>
+                <strong>공개 데모 환경 안내:</strong> 공용 테스트 계정({user?.loginId || 'sample_user'})의 원활한 체험 및 접근 유지를 위해 실제 비밀번호 변경은 제한되어 있습니다.
+              </span>
+            </div>
+
             {/* 현재 비밀번호 */}
             <div className={styles.formGroup}>
               <label className={styles.label}>

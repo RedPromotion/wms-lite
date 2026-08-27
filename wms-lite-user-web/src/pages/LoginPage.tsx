@@ -80,7 +80,7 @@ export const LoginPage: React.FC = () => {
             <button
               type="button"
               className={styles.demoBtn}
-              onClick={() => handleQuickFill('sample_operator', 'SamplePassword123!', '현장 작업자')}
+              onClick={() => handleQuickFill('sample_worker', 'SamplePassword123!', '현장 작업자')}
             >
               <HardHat size={14} />
               <span>현장 작업자</span>
