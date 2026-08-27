@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore, loginApi } from '../features/auth';
-import { Lock, User, LogIn, Warehouse } from 'lucide-react';
+import { Lock, User, LogIn, Warehouse, Sparkles, ShieldCheck, HardHat } from 'lucide-react';
 import toast from 'react-hot-toast';
 import styles from './LoginPage.module.css';
 
@@ -12,6 +12,12 @@ export const LoginPage: React.FC = () => {
   const [loginId, setLoginId] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleQuickFill = (id: string, pw: string, roleName: string) => {
+    setLoginId(id);
+    setPassword(pw);
+    toast.success(`[${roleName}] 데모 계정 정보가 입력되었습니다.`);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +60,32 @@ export const LoginPage: React.FC = () => {
           </div>
           <h1 className={styles.title}>WMS Lite</h1>
           <p className={styles.subtitle}>현장 작업자 및 관리자 통합 로그인</p>
+        </div>
+
+        {/* 데모 체험 퀵 채우기 섹션 */}
+        <div className={styles.demoSection}>
+          <div className={styles.demoHeader}>
+            <Sparkles size={16} />
+            <span>데모 체험 계정 자동 입력</span>
+          </div>
+          <div className={styles.demoBtnGroup}>
+            <button
+              type="button"
+              className={styles.demoBtn}
+              onClick={() => handleQuickFill('sample_supervisor', 'SamplePassword123!', '현장 관리자')}
+            >
+              <ShieldCheck size={14} />
+              <span>현장 관리자</span>
+            </button>
+            <button
+              type="button"
+              className={styles.demoBtn}
+              onClick={() => handleQuickFill('sample_operator', 'SamplePassword123!', '현장 작업자')}
+            >
+              <HardHat size={14} />
+              <span>현장 작업자</span>
+            </button>
+          </div>
         </div>
 
         {/* 로그인 폼 */}
@@ -107,4 +139,5 @@ export const LoginPage: React.FC = () => {
     </div>
   );
 };
+
 

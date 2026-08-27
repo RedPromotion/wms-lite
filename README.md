@@ -2,6 +2,7 @@
 
 <div align="center">
 
+[![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Interactive_Web-blue?style=for-the-badge&logo=github)](https://redpromotion.github.io/wms-lite)
 ![Java](https://img.shields.io/badge/Java-21-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white)
 ![Spring Boot](https://img.shields.io/badge/Spring_Boot-4.1-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
 ![Spring Data JPA](https://img.shields.io/badge/Spring_Data_JPA-Hibernate-59666C?style=for-the-badge&logo=hibernate&logoColor=white)
@@ -14,7 +15,17 @@
 **Java 21 · Spring Boot · JPA 기반의 엔터프라이즈급 창고 관리 시스템(WMS) 통합 포트폴리오**  
 *MES SI 3.5년 실무 도메인 경험을 바탕으로 동시성 제어, 트랜잭션 분리, 선점형 재고 관리 및 표준 아키텍처를 구현한 프로젝트입니다.*
 
+👉 **[🚀 WMS-Lite 데모 사이트 바로가기 (Click)](https://redpromotion.github.io/wms-lite)**
+
 </div>
+
+> 💡 **데모 프로그램 체험 계정 (Demo Credentials)**  
+> 데모 사이트 접속 시 아래 로그인 정보를 이용하시거나, 로그인 창의 **[데모 계정 자동 입력]** 버튼을 클릭하시면 별도 입력 없이 즉시 체험이 가능합니다.
+>
+> | 권한 (Role) | 아이디 (ID) | 비밀번호 (Password) | 주요 체험 기능 |
+> | :--- | :--- | :--- | :--- |
+> | **현장 관리자** | `sample_supervisor` | `SamplePassword123!` | 입출고 승인/관리, 재고 이동 관제, 전체 현황 조회 |
+> | **현장 작업자** | `sample_operator` | `SamplePassword123!` | 입고 적치(Putaway), 출고 피킹(Picking) |
 
 ---
 
